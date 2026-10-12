@@ -140,7 +140,7 @@ function onScroll() {
 if (lenis) lenis.on('scroll', onScroll); else window.addEventListener('scroll', onScroll, { passive: true });
 
 /* pointer → world */
-if (world && finePointer) {
+if (world) {
   let pending = false, px = 0, py = 0;
   window.addEventListener('pointermove', (e) => {
     px = (e.clientX / innerWidth) * 2 - 1; py = -(e.clientY / innerHeight) * 2 + 1;
