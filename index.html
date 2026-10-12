@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mohammed Ali — Full-Stack Developer, Web Designer & SEO</title>
+  <meta name="description" content="Mohammed Ali is a full-stack web developer building fast, interactive 3D websites with JavaScript, PHP, Python, Three.js and MySQL — plus web design, graphic design, SEO and digital marketing." />
+  <meta name="theme-color" content="#07070b" />
+  <meta property="og:title" content="Mohammed Ali — Full-Stack Developer" />
+  <meta property="og:description" content="Full-stack development, 3D web experiences, web & graphic design, SEO and digital marketing." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"/","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- Loader -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader__count"><span class="loader__num">0</span><span class="loader__pct">%</span></div>
+    <div class="loader__bar"><span></span></div>
+  </div>
+
+  <!-- 3D world -->
+  <div class="world" aria-hidden="true">
+    <div class="world__poster"></div>
+    <canvas class="world__canvas"></canvas>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Cursor -->
+  <div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><span class="cursor__label"></span></span></div>
+
+  <header class="nav">
+    <a href="#top" class="nav__logo" aria-label="Mohammed Ali — home">
+      <span class="nav__mark">MA</span>
+      <span class="nav__name">Mohammed Ali</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#stack">Stack</a>
+      <a href="#process">Process</a>
+    </nav>
+    <a href="#contact" class="nav__cta" data-magnetic><span class="pulse"></span>Open to projects</a>
+    <button class="nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <nav aria-label="Mobile">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#stack">Stack</a>
+      <a href="#process">Process</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top" data-shape="0">
+      <p class="eyebrow hero__eyebrow"><span class="eyebrow__line"></span>Full-stack developer · Designer · Growth</p>
+      <h1 class="hero__title" aria-label="Mohammed Ali">
+        <span class="hero__row"><span class="hero__word">Mohammed</span></span>
+        <span class="hero__row hero__row--2"><span class="hero__word">Ali<em>.</em></span></span>
+      </h1>
+      <div class="hero__bottom">
+        <p class="hero__lede">I build websites as one living system — from the <strong>MySQL</strong> schema to the <strong>Three.js</strong> pixel to the search result that brings people in.</p>
+        <div class="hero__ctas">
+          <a href="#work" class="btn btn--solid" data-magnetic data-cursor="View">See my work <iconify-icon icon="solar:arrow-right-down-linear"></iconify-icon></a>
+          <a href="#contact" class="btn btn--ghost" data-magnetic>Start a project</a>
+        </div>
+      </div>
+      <div class="hero__roles" aria-hidden="true">
+        <span>Now building</span>
+        <div class="hero__roles-track"><b>3D web experiences</b><b>Full-stack apps</b><b>Brand & graphics</b><b>SEO that ranks</b></div>
+      </div>
+      <a href="#about" class="hero__scroll" aria-label="Scroll to about"><span></span></a>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-label="Technologies">
+      <div class="marquee__track">
+        <div class="marquee__group">
+          <span><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript</span>
+          <span><iconify-icon icon="logos:php"></iconify-icon>PHP</span>
+          <span><iconify-icon icon="logos:python"></iconify-icon>Python</span>
+          <span><iconify-icon icon="logos:html-5"></iconify-icon>HTML5</span>
+          <span><iconify-icon icon="logos:css-3"></iconify-icon>CSS3</span>
+          <span><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js</span>
+          <span><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL</span>
+          <span><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL</span>
+        </div>
+        <div class="marquee__group" aria-hidden="true">
+          <span><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript</span>
+          <span><iconify-icon icon="logos:php"></iconify-icon>PHP</span>
+          <span><iconify-icon icon="logos:python"></iconify-icon>Python</span>
+          <span><iconify-icon icon="logos:html-5"></iconify-icon>HTML5</span>
+          <span><iconify-icon icon="logos:css-3"></iconify-icon>CSS3</span>
+          <span><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js</span>
+          <span><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL</span>
+          <span><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="about section" id="about" data-shape="1">
+      <p class="eyebrow"><span class="eyebrow__num">01</span>About</p>
+      <p class="about__text" data-reveal-words>I'm Mohammed Ali, a full-stack developer who treats a website as one system. The database, the PHP and Python on the server, the JavaScript and Three.js in the browser, the design that makes people stay — and the SEO and marketing that bring them in. I own every layer, so nothing gets lost between them.</p>
+      <div class="about__grid">
+        <div class="about__cell"><span class="about__k">Build</span><p>Full-stack web apps, APIs and databases that stay fast as they grow.</p></div>
+        <div class="about__cell"><span class="about__k">Design</span><p>Interfaces, brand identities and graphics with a clear point of view.</p></div>
+        <div class="about__cell"><span class="about__k">Grow</span><p>Technical SEO and digital marketing that turn visits into results.</p></div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="services section" id="services" data-shape="2">
+      <div class="section__head">
+        <p class="eyebrow"><span class="eyebrow__num">02</span>Services</p>
+        <h2 class="h2" data-split>What I can do for you</h2>
+      </div>
+      <ol class="services__list">
+        <li class="service" data-cursor="Open">
+          <span class="service__num">01</span>
+          <h3 class="service__title">Full-stack development</h3>
+          <p class="service__desc">End-to-end web apps: secure PHP & Python back ends, clean SQL data models, and fast JavaScript front ends.</p>
+          <ul class="service__tags"><li>PHP</li><li>Python</li><li>MySQL</li><li>REST APIs</li></ul>
+        </li>
+        <li class="service" data-cursor="Open">
+          <span class="service__num">02</span>
+          <h3 class="service__title">3D & interactive web</h3>
+          <p class="service__desc">Immersive Three.js scenes, shaders and scroll-driven motion that make a brand impossible to forget.</p>
+          <ul class="service__tags"><li>Three.js</li><li>WebGL</li><li>GSAP</li></ul>
+        </li>
+        <li class="service" data-cursor="Open">
+          <span class="service__num">03</span>
+          <h3 class="service__title">Web design</h3>
+          <p class="service__desc">Modern, responsive UI/UX — wireframes to polished interfaces that are easy to use on every screen.</p>
+          <ul class="service__tags"><li>UI/UX</li><li>Responsive</li><li>Prototyping</li></ul>
+        </li>
+        <li class="service" data-cursor="Open">
+          <span class="service__num">04</span>
+          <h3 class="service__title">Graphic design</h3>
+          <p class="service__desc">Logos, brand identities, social media graphics and print — visuals that look like they belong together.</p>
+          <ul class="service__tags"><li>Branding</li><li>Logos</li><li>Social</li></ul>
+        </li>
+        <li class="service" data-cursor="Open">
+          <span class="service__num">05</span>
+          <h3 class="service__title">SEO</h3>
+          <p class="service__desc">Technical and on-page SEO: site speed, structured data, content and keywords that help you rank and stay ranked.</p>
+          <ul class="service__tags"><li>Technical SEO</li><li>Core Web Vitals</li><li>Content</li></ul>
+        </li>
+        <li class="service" data-cursor="Open">
+          <span class="service__num">06</span>
+          <h3 class="service__title">Digital marketing</h3>
+          <p class="service__desc">Campaigns, social strategy and analytics that put your product in front of the right people.</p>
+          <ul class="service__tags"><li>Social</li><li>Campaigns</li><li>Analytics</li></ul>
+        </li>
+      </ol>
+    </section>
+
+    <!-- STACK -->
+    <section class="stack section" id="stack" data-shape="3">
+      <div class="section__head">
+        <p class="eyebrow"><span class="eyebrow__num">03</span>Stack</p>
+        <h2 class="h2" data-split>Tools I build with every day</h2>
+      </div>
+      <div class="stack__grid">
+        <article class="layer" data-tilt>
+          <header class="layer__head"><span class="layer__idx">Layer / Front</span><iconify-icon icon="solar:monitor-smartphone-linear"></iconify-icon></header>
+          <h3>Browser</h3>
+          <ul class="layer__list">
+            <li><iconify-icon icon="logos:html-5"></iconify-icon>HTML5<span>Semantic, accessible markup</span></li>
+            <li><iconify-icon icon="logos:css-3"></iconify-icon>CSS3<span>Layout, motion, responsive</span></li>
+            <li><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript<span>Interactive front ends</span></li>
+            <li><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js<span>3D, WebGL, shaders</span></li>
+          </ul>
+        </article>
+        <article class="layer" data-tilt>
+          <header class="layer__head"><span class="layer__idx">Layer / Server</span><iconify-icon icon="solar:server-square-linear"></iconify-icon></header>
+          <h3>Back end</h3>
+          <ul class="layer__list">
+            <li><iconify-icon icon="logos:php"></iconify-icon>PHP<span>Web apps & APIs</span></li>
+            <li><iconify-icon icon="logos:python"></iconify-icon>Python<span>Scripts, automation, APIs</span></li>
+            <li><iconify-icon icon="logos:javascript"></iconify-icon>Node.js<span>Real-time services</span></li>
+          </ul>
+        </article>
+        <article class="layer" data-tilt>
+          <header class="layer__head"><span class="layer__idx">Layer / Data</span><iconify-icon icon="solar:database-linear"></iconify-icon></header>
+          <h3>Database</h3>
+          <ul class="layer__list">
+            <li><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL<span>Relational data at scale</span></li>
+            <li><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL<span>Schemas, queries, tuning</span></li>
+          </ul>
+        </article>
+        <article class="layer" data-tilt>
+          <header class="layer__head"><span class="layer__idx">Layer / Growth</span><iconify-icon icon="solar:graph-up-linear"></iconify-icon></header>
+          <h3>Design & reach</h3>
+          <ul class="layer__list">
+            <li><iconify-icon icon="solar:pallete-2-linear"></iconify-icon>Web & graphic design<span>UI, brand, visuals</span></li>
+            <li><iconify-icon icon="solar:magnifer-linear"></iconify-icon>SEO<span>Ranking & performance</span></li>
+            <li><iconify-icon icon="solar:megaphone-linear"></iconify-icon>Digital marketing<span>Campaigns & analytics</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="work section" id="work" data-shape="4">
+      <div class="section__head">
+        <p class="eyebrow"><span class="eyebrow__num">04</span>Selected work</p>
+        <h2 class="h2" data-split>Projects I'm building</h2>
+      </div>
+
+      <div class="featured">
+        <article class="feat" data-repo-hint="islam,quran,learning" data-cursor="Explore">
+          <div class="feat__top"><span class="feat__idx">P—01</span><span class="feat__type">Web platform</span></div>
+          <h3 class="feat__title">A–Z Islamic Learning Platform</h3>
+          <p class="feat__desc">An all-in-one, multilingual and interactive 3D learning web app — Quran reader, Hadith library, daily utilities and Q&A in one place.</p>
+          <ul class="feat__stack"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
+          <a class="feat__link" hidden target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        </article>
+        <article class="feat" data-repo-hint="pingo" data-cursor="Explore">
+          <div class="feat__top"><span class="feat__idx">P—02</span><span class="feat__type">Mobile app</span></div>
+          <h3 class="feat__title">Pingo</h3>
+          <p class="feat__desc">Real-time chat, media sharing and voice/video calling — a cross-platform mobile app with a live socket back end.</p>
+          <ul class="feat__stack"><li>React Native</li><li>Node.js</li><li>Socket.io</li><li>Supabase</li><li>Agora</li></ul>
+          <a class="feat__link" hidden target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        </article>
+        <article class="feat" data-repo-hint="appointments" data-cursor="Explore">
+          <div class="feat__top"><span class="feat__idx">P—03</span><span class="feat__type">Android + Web</span></div>
+          <h3 class="feat__title">Appointments</h3>
+          <p class="feat__desc">An offline appointment & reminder app with custom day-and-time reminders that ring like a real alarm — on Android and the web.</p>
+          <ul class="feat__stack"><li>Kotlin</li><li>Jetpack Compose</li><li>Web</li></ul>
+          <a class="feat__link" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        </article>
+      </div>
+
+      <div class="repos">
+        <div class="repos__head">
+          <div>
+            <h3 class="repos__title">All repositories</h3>
+            <p class="repos__sub">Pulled live from <a href="https://github.com/Md12Ali" target="_blank" rel="noopener">github.com/Md12Ali</a> — always up to date.</p>
+          </div>
+          <div class="repos__filters" role="group" aria-label="Filter by language"></div>
+        </div>
+        <div class="repos__grid" aria-live="polite">
+          <div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div>
+          <div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div>
+        </div>
+        <a href="https://github.com/Md12Ali" class="btn btn--ghost repos__all" target="_blank" rel="noopener" data-magnetic><iconify-icon icon="mdi:github"></iconify-icon> See everything on GitHub</a>
+      </div>
+    </section>
+
+    <!-- PROCESS (pinned horizontal) -->
+    <section class="process" id="process" data-shape="5">
+      <div class="process__pin">
+        <div class="process__intro">
+          <p class="eyebrow"><span class="eyebrow__num">05</span>Process</p>
+          <h2 class="h2" data-split>From idea to launch — and beyond</h2>
+          <div class="process__progress" aria-hidden="true"><span></span></div>
+        </div>
+        <ol class="process__track">
+          <li class="step"><span class="step__n">01</span><h3>Discover</h3><p>We define goals, audience and success metrics. I map the content, data and features before a single pixel is drawn.</p></li>
+          <li class="step"><span class="step__n">02</span><h3>Design</h3><p>Wireframes, then a distinct visual identity — typography, colour, motion — prototyped so you can feel it early.</p></li>
+          <li class="step"><span class="step__n">03</span><h3>Build</h3><p>Clean, tested code across the full stack: database, server, and a fast front end with 3D where it earns its place.</p></li>
+          <li class="step"><span class="step__n">04</span><h3>Launch & grow</h3><p>Deployment, SEO, analytics and marketing — so the site keeps working for you long after launch day.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact section" id="contact" data-shape="6">
+      <p class="eyebrow"><span class="eyebrow__num">06</span>Contact</p>
+      <h2 class="contact__title" data-split>Let's build something remarkable.</h2>
+      <p class="contact__lede">Have a website, app, brand or campaign in mind? Tell me about it — I'll reply with ideas, not just a quote.</p>
+      <div class="contact__ctas">
+        <a class="orb" id="contact-primary" href="https://github.com/Md12Ali" target="_blank" rel="noopener" data-magnetic data-cursor="Hello">
+          <span class="orb__label">Get in touch</span>
+          <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+        </a>
+        <ul class="contact__links">
+          <li><a href="https://github.com/Md12Ali" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon>GitHub<span>@Md12Ali</span></a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year">2026</span> Mohammed Ali. Designed & built by hand with Three.js.</p>
+    <a href="#top" class="footer__top">Back to top <iconify-icon icon="solar:arrow-up-linear"></iconify-icon></a>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
