@@ -7,6 +7,13 @@ const API = `https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed
 const CACHE_KEY = 'ma-repos-v1';
 const CACHE_MS = 10 * 60 * 1000;
 
+// Live deployments on Render, keyed by lower-case repo name
+const LIVE = {
+  qunor: 'https://qunor.onrender.com',
+  paraline: 'https://paraline.onrender.com',
+  appointments: 'https://appointments-reminder.onrender.com',
+};
+
 const LANG_COLORS = {
   JavaScript: '#f1e05a', TypeScript: '#3178c6', PHP: '#7a86b8', Python: '#3572A5', HTML: '#e34c26',
   CSS: '#663399', Kotlin: '#A97BFF', Java: '#b07219', Dart: '#00B4AB', Vue: '#41b883', Shell: '#89e051',
@@ -45,17 +52,19 @@ async function getRepos() {
 
 function repoCard(r) {
   const color = LANG_COLORS[r.lang] || '#8b8a9b';
+  const live = LIVE[r.name.toLowerCase()] || (r.home && /^https?:\/\//.test(r.home) ? r.home : '');
   return `
-  <a class="repo" href="${esc(r.url)}" target="_blank" rel="noopener" data-lang="${esc(r.lang || 'Other')}" data-cursor="Code">
-    <div class="repo__name"><span>${esc(prettyName(r.name))}</span><iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></div>
+  <article class="repo" data-lang="${esc(r.lang || 'Other')}" data-cursor="Code">
+    <h4 class="repo__name"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(prettyName(r.name))}</a><iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></h4>
     <p class="repo__desc">${esc(r.desc || (r.fork ? 'Forked repository.' : 'A project by Mohammed Ali.'))}</p>
+    ${live ? `<a class="repo__live" href="${esc(live)}" target="_blank" rel="noopener"><span class="pulse"></span>Live site</a>` : ''}
     <div class="repo__meta">
       ${r.lang ? `<span><i class="repo__dot" style="background:${color}"></i>${esc(r.lang)}</span>` : ''}
       ${r.stars ? `<span><iconify-icon icon="solar:star-linear"></iconify-icon>${r.stars}</span>` : ''}
       ${r.fork ? '<span>Fork</span>' : ''}
       <span>Updated ${timeAgo(r.pushed)}</span>
     </div>
-  </a>`;
+  </article>`;
 }
 
 export async function initProjects({ onRender } = {}) {
@@ -73,7 +82,7 @@ export async function initProjects({ onRender } = {}) {
 
   repos = repos
     .filter((r) => r.name.toLowerCase() !== 'personal-portfolio')
-    .sort((a, b) => (a.fork - b.fork) || (new Date(b.pushed) - new Date(a.pushed)));
+    .sort((a, b) => (a.fork - b.fork) || (!!LIVE[b.name.toLowerCase()] - !!LIVE[a.name.toLowerCase()]) || (new Date(b.pushed) - new Date(a.pushed)));
 
   // link featured cards to their real repos when found
   document.querySelectorAll('.feat[data-repo-hint]').forEach((card) => {

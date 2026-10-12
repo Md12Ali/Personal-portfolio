@@ -9,13 +9,15 @@
   <meta property="og:title" content="Mohammed Ali — Full-Stack Developer" />
   <meta property="og:description" content="Full-stack development, 3D web experiences, web & graphic design, SEO and digital marketing." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mohammed-ali-portfolio.onrender.com" />
+  <link rel="canonical" href="https://mohammed-ali-portfolio.onrender.com/" />
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"/","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
+  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"https://mohammed-ali-portfolio.onrender.com","email":"mailto:md077ali@gmail.com","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
   </script>
 </head>
 <body>
@@ -37,6 +39,12 @@
   <!-- Cursor -->
   <div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><span class="cursor__label"></span></span></div>
 
+  <div class="progress" aria-hidden="true"><span></span></div>
+  <a href="#top" class="totop" aria-label="Back to top">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" class="totop__track"/><circle cx="24" cy="24" r="22" class="totop__bar"/></svg>
+    <iconify-icon icon="solar:arrow-up-linear"></iconify-icon>
+  </a>
+
   <header class="nav">
     <a href="#top" class="nav__logo" aria-label="Mohammed Ali — home">
       <span class="nav__mark">MA</span>
@@ -48,7 +56,7 @@
       <a href="#stack">Stack</a>
       <a href="#process">Process</a>
     </nav>
-    <a href="#contact" class="nav__cta" data-magnetic><span class="pulse"></span>Open to projects</a>
+    <a href="mailto:md077ali@gmail.com" class="nav__cta" data-magnetic><span class="pulse"></span>Hire me</a>
     <button class="nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </header>
 
@@ -65,21 +73,21 @@
   <main id="main">
     <!-- HERO -->
     <section class="hero" id="top" data-shape="0">
-      <p class="eyebrow hero__eyebrow"><span class="eyebrow__line"></span>Full-stack developer · Designer · Growth</p>
-      <h1 class="hero__title" aria-label="Mohammed Ali">
-        <span class="hero__row"><span class="hero__word">Mohammed</span></span>
-        <span class="hero__row hero__row--2"><span class="hero__word">Ali<em>.</em></span></span>
-      </h1>
-      <div class="hero__bottom">
+      <div class="hero__inner">
+        <p class="eyebrow hero__eyebrow"><span class="eyebrow__line"></span><span data-scramble>Full-stack developer · Designer · SEO</span></p>
+        <h1 class="hero__title" aria-label="Mohammed Ali">
+          <span class="hero__row"><span class="hero__word">Mohammed</span></span>
+          <span class="hero__row"><span class="hero__word">Ali<em>.</em></span></span>
+        </h1>
+        <div class="hero__roles" aria-hidden="true">
+          <span>I craft</span>
+          <div class="hero__roles-track"><b>3D web experiences</b><b>Full-stack web apps</b><b>Brands &amp; graphics</b><b>SEO that ranks</b></div>
+        </div>
         <p class="hero__lede">I build websites as one living system — from the <strong>MySQL</strong> schema to the <strong>Three.js</strong> pixel to the search result that brings people in.</p>
         <div class="hero__ctas">
           <a href="#work" class="btn btn--solid" data-magnetic data-cursor="View">See my work <iconify-icon icon="solar:arrow-right-down-linear"></iconify-icon></a>
-          <a href="#contact" class="btn btn--ghost" data-magnetic>Start a project</a>
+          <a href="mailto:md077ali@gmail.com" class="btn btn--ghost" data-magnetic><iconify-icon icon="solar:letter-linear"></iconify-icon> Email me</a>
         </div>
-      </div>
-      <div class="hero__roles" aria-hidden="true">
-        <span>Now building</span>
-        <div class="hero__roles-track"><b>3D web experiences</b><b>Full-stack apps</b><b>Brand & graphics</b><b>SEO that ranks</b></div>
       </div>
       <a href="#about" class="hero__scroll" aria-label="Scroll to about"><span></span></a>
     </section>
@@ -221,26 +229,45 @@
       </div>
 
       <div class="featured">
-        <article class="feat" data-repo-hint="islam,quran,learning" data-cursor="Explore">
-          <div class="feat__top"><span class="feat__idx">P—01</span><span class="feat__type">Web platform</span></div>
-          <h3 class="feat__title">A–Z Islamic Learning Platform</h3>
-          <p class="feat__desc">An all-in-one, multilingual and interactive 3D learning web app — Quran reader, Hadith library, daily utilities and Q&A in one place.</p>
-          <ul class="feat__stack"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
-          <a class="feat__link" hidden target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        <article class="feat feat--live" data-cursor="Visit">
+          <div class="feat__top"><span class="feat__idx">P—01</span><span class="feat__type">Web app</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
+          <h3 class="feat__title">Qunor</h3>
+          <span class="feat__url">qunor.onrender.com</span>
+          <p class="feat__desc">A free app for learning to read the Quran — all 114 surahs, word-by-word audio from 44 reciters, qaida and tajweed lessons, and translations in 81 languages. Works offline, no account needed.</p>
+          <ul class="feat__stack"><li>JavaScript</li><li>HTML</li><li>CSS</li><li>PWA</li></ul>
+          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://qunor.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/Qunor" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
         </article>
-        <article class="feat" data-repo-hint="pingo" data-cursor="Explore">
-          <div class="feat__top"><span class="feat__idx">P—02</span><span class="feat__type">Mobile app</span></div>
+        <article class="feat feat--live" data-cursor="Visit">
+          <div class="feat__top"><span class="feat__idx">P—02</span><span class="feat__type">Web tool</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
+          <h3 class="feat__title">ParaLine</h3>
+          <span class="feat__url">paraline.onrender.com</span>
+          <p class="feat__desc">A free, unlimited paraphrasing tool that rewrites English text in six styles while keeping every line separate — with an offline mode and an optional Gemini AI mode.</p>
+          <ul class="feat__stack"><li>JavaScript</li><li>AI</li><li>HTML</li><li>CSS</li></ul>
+          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://paraline.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/paraline" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
+        </article>
+        <article class="feat feat--live" data-cursor="Visit">
+          <div class="feat__top"><span class="feat__idx">P—03</span><span class="feat__type">Web + Android</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
+          <h3 class="feat__title">Appointments</h3>
+          <span class="feat__url">appointments-reminder.onrender.com</span>
+          <p class="feat__desc">A private appointment tracker with text or voice notes and reminders at any day and time you choose — everything stays on your device.</p>
+          <ul class="feat__stack"><li>JavaScript</li><li>Kotlin</li><li>Jetpack Compose</li></ul>
+          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://appointments-reminder.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
+        </article>
+        <article class="feat feat--wip" data-repo-hint="islam,learning" data-cursor="Soon">
+          <div class="feat__top"><span class="feat__idx">P—04</span><span class="feat__type">3D web platform</span><span class="feat__badge feat__badge--wip">In progress</span></div>
+          <h3 class="feat__title">A–Z Islamic Learning Platform</h3>
+          
+          <p class="feat__desc">An all-in-one, multilingual and interactive 3D learning platform — Quran reader, Hadith library, daily utilities and Q&amp;A in one place.</p>
+          <ul class="feat__stack"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
+          <div class="feat__btns"><a class="feat__btn feat__link" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
+        </article>
+        <article class="feat feat--wip" data-repo-hint="pingo" data-cursor="Soon">
+          <div class="feat__top"><span class="feat__idx">P—05</span><span class="feat__type">Mobile app</span><span class="feat__badge feat__badge--wip">In progress</span></div>
           <h3 class="feat__title">Pingo</h3>
+          
           <p class="feat__desc">Real-time chat, media sharing and voice/video calling — a cross-platform mobile app with a live socket back end.</p>
           <ul class="feat__stack"><li>React Native</li><li>Node.js</li><li>Socket.io</li><li>Supabase</li><li>Agora</li></ul>
-          <a class="feat__link" hidden target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
-        </article>
-        <article class="feat" data-repo-hint="appointments" data-cursor="Explore">
-          <div class="feat__top"><span class="feat__idx">P—03</span><span class="feat__type">Android + Web</span></div>
-          <h3 class="feat__title">Appointments</h3>
-          <p class="feat__desc">An offline appointment & reminder app with custom day-and-time reminders that ring like a real alarm — on Android and the web.</p>
-          <ul class="feat__stack"><li>Kotlin</li><li>Jetpack Compose</li><li>Web</li></ul>
-          <a class="feat__link" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener">View repository <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+          <div class="feat__btns"><a class="feat__btn feat__link" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
         </article>
       </div>
 
@@ -283,11 +310,13 @@
       <h2 class="contact__title" data-split>Let's build something remarkable.</h2>
       <p class="contact__lede">Have a website, app, brand or campaign in mind? Tell me about it — I'll reply with ideas, not just a quote.</p>
       <div class="contact__ctas">
-        <a class="orb" id="contact-primary" href="https://github.com/Md12Ali" target="_blank" rel="noopener" data-magnetic data-cursor="Hello">
+        <a class="orb" id="contact-primary" href="mailto:md077ali@gmail.com?subject=Project%20enquiry" data-magnetic data-cursor="Hello">
           <span class="orb__label">Get in touch</span>
           <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
         </a>
         <ul class="contact__links">
+          <li><a href="mailto:md077ali@gmail.com"><iconify-icon icon="solar:letter-linear"></iconify-icon>Email<span>md077ali@gmail.com</span></a></li>
+          <li><button type="button" class="copy-email" data-email="md077ali@gmail.com"><iconify-icon icon="solar:copy-linear"></iconify-icon><span class="copy-email__label">Copy email address</span><span class="copy-email__hint">Click to copy</span></button></li>
           <li><a href="https://github.com/Md12Ali" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon>GitHub<span>@Md12Ali</span></a></li>
         </ul>
       </div>

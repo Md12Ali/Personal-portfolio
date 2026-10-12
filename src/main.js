@@ -23,7 +23,9 @@ function splitWords(el, cls = '') {
     cls ? `<span class="${cls}" aria-hidden="true">${w}</span>`
         : `<span class="split-word" aria-hidden="true"><span>${w}</span></span>`).join(' ');
 }
+const heroOriginals = new Map();
 function splitChars(el) {
+  heroOriginals.set(el, el.innerHTML);
   const em = el.querySelector('em');
   const tail = em ? em.outerHTML : '';
   const text = el.childNodes[0].textContent;
@@ -94,8 +96,8 @@ navLinks.forEach((a) => {
 const worldEl = document.querySelector('.world');
 let world = null;
 if (!reduce) {
-  const count = window.innerWidth < 860 ? 9000 : 18000;
-  world = createWorld(document.querySelector('.world__canvas'), { count });
+  const mobile = window.innerWidth < 860 || !finePointer;
+  world = createWorld(document.querySelector('.world__canvas'), { mobile });
   if (world) world.onContextLost(() => worldEl.classList.remove('is-live'));
 }
 
@@ -119,9 +121,17 @@ function morphForScroll(y) {
 }
 ScrollTrigger.addEventListener('refresh', measureShapes);
 
+const progressBar = document.querySelector('.progress span');
+const totop = document.querySelector('.totop');
+const totopBar = document.querySelector('.totop__bar');
 function onScroll() {
   const y = window.scrollY;
   onScrollNav(y);
+  const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  const p = Math.min(1, y / max);
+  progressBar.style.transform = `scaleX(${p})`;
+  totopBar.style.strokeDashoffset = String(138.2 * (1 - p));
+  totop.classList.toggle('is-visible', y > window.innerHeight * 0.8);
   if (world) {
     world.setMorph(morphForScroll(y));
     if (lenis) world.setVelocity(lenis.velocity / 30);
@@ -191,6 +201,58 @@ if (finePointer && !reduce) {
   }, { passive: true });
 }
 
+/* ---------------- Text scramble ---------------- */
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+/<>';
+function scramble(el, duration = 900) {
+  if (reduce || el.dataset.scrambling) return;
+  const final = el.dataset.final || (el.dataset.final = el.textContent);
+  el.dataset.scrambling = '1';
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const reveal = Math.floor(t * final.length);
+    let out = '';
+    for (let i = 0; i < final.length; i++) {
+      const ch = final[i];
+      if (i < reveal || ch === ' ' || ch === '·') out += ch;
+      else out += `<span class="scr">${GLYPHS[(Math.random() * GLYPHS.length) | 0]}</span>`;
+    }
+    el.innerHTML = out;
+    if (t < 1) requestAnimationFrame(step);
+    else { el.textContent = final; delete el.dataset.scrambling; }
+  };
+  requestAnimationFrame(step);
+}
+
+/* ---------------- Copy email ---------------- */
+document.querySelectorAll('.copy-email').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const hint = btn.querySelector('.copy-email__hint');
+    try {
+      await navigator.clipboard.writeText(btn.dataset.email);
+      hint.textContent = 'Copied ✓';
+    } catch (e) {
+      window.location.href = `mailto:${btn.dataset.email}`;
+      hint.textContent = 'Opening mail…';
+    }
+    btn.classList.add('is-done');
+    setTimeout(() => { hint.textContent = 'Click to copy'; btn.classList.remove('is-done'); }, 2200);
+  });
+});
+
+/* ---------------- 3D name tilt ---------------- */
+if (finePointer && !reduce) {
+  const title = document.querySelector('.hero__title');
+  const tX = gsap.quickTo(title, 'rotationY', { duration: 1.2, ease: 'power3' });
+  const tY = gsap.quickTo(title, 'rotationX', { duration: 1.2, ease: 'power3' });
+  gsap.set(title, { transformPerspective: 900 });
+  window.addEventListener('pointermove', (e) => {
+    if (window.scrollY > window.innerHeight) return;
+    tX((e.clientX / innerWidth - 0.5) * 16);
+    tY(-(e.clientY / innerHeight - 0.5) * 12);
+  }, { passive: true });
+}
+
 /* ---------------- Scroll choreography ---------------- */
 function setupScroll() {
   if (reduce) return;
@@ -203,8 +265,12 @@ function setupScroll() {
     });
   });
 
-  gsap.utils.toArray('.section .eyebrow').forEach((el) => {
-    gsap.from(el, { opacity: 0, x: -20, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+  gsap.utils.toArray('.section .eyebrow, .process .eyebrow').forEach((el) => {
+    const label = [...el.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+    if (label) { const span = document.createElement('span'); span.textContent = label.textContent; label.replaceWith(span); }
+    const target = el.lastElementChild;
+    gsap.from(el, { opacity: 0, x: -20, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 90%', onEnter: () => target && scramble(target, 700) } });
   });
 
   // about manifesto lights up as you read
@@ -272,8 +338,15 @@ function heroIntro() {
     .from('.hero__eyebrow', { opacity: 0, x: -24, duration: 1 }, 0.3)
     .from('.hero__lede', { opacity: 0, y: 24, duration: 1.1 }, 0.5)
     .from('.hero__ctas > *', { opacity: 0, y: 24, stagger: 0.08, duration: 1.1 }, 0.6)
-    .from('.hero__roles, .hero__scroll', { opacity: 0, duration: 1 }, 0.9)
-    .from('.nav', { yPercent: -100, opacity: 0, duration: 1.1 }, 0.2);
+    .from('.hero__roles', { opacity: 0, y: 16, duration: 1 }, 0.45)
+    .from('.hero__scroll', { opacity: 0, duration: 1 }, 0.9)
+    .from('.nav', { yPercent: -100, opacity: 0, duration: 1.1 }, 0.2)
+    .add(() => {
+      heroOriginals.forEach((html, el) => { el.innerHTML = html; });
+      document.querySelector('.hero__title').classList.add('is-shine');
+    });
+  const eyebrowText = document.querySelector('.hero__eyebrow [data-scramble]');
+  if (eyebrowText) setTimeout(() => scramble(eyebrowText, 1100), 350);
   if (world) {
     worldEl.classList.add('is-live');
     world.start();
@@ -285,6 +358,7 @@ async function boot() {
   const loader = document.querySelector('.loader');
   const num = loader.querySelector('.loader__num');
   if (reduce) {
+    heroOriginals.forEach((html, el) => { el.innerHTML = html; });
     loader.remove();
     document.body.classList.remove('is-loading');
   } else {
