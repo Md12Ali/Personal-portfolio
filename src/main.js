@@ -286,7 +286,7 @@ function setupScroll() {
   });
 
   gsap.from('.layer', {
-    y: 80, opacity: 0, rotationX: -18, duration: 1.2, stagger: 0.1, ease: 'expo.out', transformPerspective: 1000,
+    y: 80, opacity: 0, rotationX: -18, duration: 1.2, stagger: 0.1, ease: 'expo.out', transformPerspective: 1000, clearProps: 'opacity',
     scrollTrigger: { trigger: '.stack__grid', start: 'top 80%' },
   });
 
@@ -340,7 +340,7 @@ function heroIntro() {
     .from('.hero__ctas > *', { opacity: 0, y: 24, stagger: 0.08, duration: 1.1 }, 0.6)
     .from('.hero__roles', { opacity: 0, y: 16, duration: 1 }, 0.45)
     .from('.hero__scroll', { opacity: 0, duration: 1 }, 0.9)
-    .from('.nav', { yPercent: -100, opacity: 0, duration: 1.1 }, 0.2)
+    .from('.nav', { opacity: 0, duration: 1.1, clearProps: 'all' }, 0.2)
     .add(() => {
       heroOriginals.forEach((html, el) => { el.innerHTML = html; });
       document.querySelector('.hero__title').classList.add('is-shine');
