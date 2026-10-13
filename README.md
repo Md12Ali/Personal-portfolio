@@ -2,34 +2,35 @@
 
 **Live site:** https://mohammed-ali-portfolio.onrender.com
 
-The personal portfolio of **Mohammed Ali**, a full-stack web developer who also does web design, graphic design, SEO and digital marketing. It's a dark, animated 3D website set in one night-time world with a liquid-chrome core, built with Three.js, GSAP and Vite, and deployed on Render.
+The personal portfolio of **Mohammed Ali**, a full-stack web developer who also does web design, graphic design, SEO and digital marketing. It's an animated 3D website set inside a natural mountain valley at dusk, built with Three.js, GSAP and Vite, and deployed on Render.
 
 ---
 
 ## Highlights
 
-- **One persistent 3D world.** The whole page sits in a single night landscape built with Three.js: a glowing dot-grid sea under an indigo, star-filled sky. At its heart, a liquid-chrome sculpture floats inside a halo ring. The chrome reflects an authored night studio (violet key, cyan strips, lime kicker) baked into a PMREM environment map, so its reflections match the world's colours.
-- **Scroll-driven camera.** Each section has its own camera view of a landmark, framed on the side opposite the text: the chrome core, a row of project pillars (lime tops = live, violet = in progress), four floating glass "stack" layers, and a light path for the process. Your pointer adds gentle parallax and presses a soft bulge into the chrome.
+- **A natural 3D landscape.** The whole page sits inside one mountain valley at dusk, built entirely in code with Three.js (no image files): a waterfall pouring into a lake, a river winding up through pine forest, layered mountain ranges with snowy peaks, drifting clouds, mist at the waterfall and fireflies over the water. Distant hills fade into the evening haze the way real mountains do.
+- **Scroll-driven camera.** Scrolling flies the camera up the valley. Each section has its own view, framed on the side opposite the text, and the camera eases smoothly between them. Moving the pointer adds gentle depth.
+- **Readable on every screen.** The near landscape stays dark and the warm light lives on the horizon, so text keeps strong contrast; phones get a lighter scene (fewer trees, less detail, no glow pass) so scrolling stays smooth.
 - **Live GitHub projects.** Every public repository is pulled from the GitHub API in the visitor's browser, so new repos show up without a rebuild. Filter them by language; deployed repos get a **Live site** link.
 - **Editorial work index.** Featured projects are large rows that open on hover or keyboard focus (always open on touch screens).
 - **Motion design.** Intro curtain, letter-by-letter name reveal, headings that rise word by word, a statement that fills with light as you read, a process timeline that draws itself, and a magnetic contact button.
 - **SEO.** Meta, Open Graph image and canonical tags, plus `Person` structured data (JSON-LD).
 - **Accessibility.** Skip link, visible focus, accessible labels on split text, and a reduced-motion mode that shows a rendered poster of the world instead of WebGL, with no smooth scrolling and no animation.
 
-### The world, section by section
+### The valley, section by section
 
 | Section | What the camera shows |
 |---|---|
-| Hero | The chrome core in its halo ring, right of the name |
-| About | The core from above, on the left |
-| Work | The project pillars, right of the list |
-| Repositories | Open sky and sea behind the frosted panel |
-| Services | The core seen from across the sea, on the left |
-| Stack | The four glass layers, on the right |
-| Process | The light path running into the distance, on the left |
-| Contact | The core rising from the bottom of the screen |
+| Hero | The waterfall and lake, beside the name |
+| About | The waterfall from the hillside |
+| Work | Up the valley toward the snowy peaks |
+| Repositories | High above the forest, the river below |
+| Services | Across the valley to the far ranges |
+| Stack | From the opposite slope toward the peaks |
+| Process | Following the river upstream |
+| Contact | A high view over the whole valley |
 
-On desktop a light bloom pass adds glow. Phones get a lighter mesh, fewer points and no bloom.
+On desktop a soft bloom pass makes the sky glow, the water glint and the fireflies shine.
 
 ---
 
@@ -72,7 +73,7 @@ On desktop a light bloom pass adds glow. Phones get a lighter mesh, fewer points
 │   └── og.jpg        # Social share image
 ├── src/
 │   ├── main.js       # Intro, smooth scroll, scroll choreography, nav, contact
-│   ├── scene.js      # The 3D world: sea, sky, chrome core, landmarks, camera views
+│   ├── scene.js      # The 3D valley: terrain, waterfall, water, forest, sky, camera views
 │   ├── projects.js   # Live GitHub repos, filters and live-site links
 │   └── style.css     # All styles and responsive layout
 ├── render.yaml       # Render static-site configuration
@@ -104,7 +105,7 @@ npm run preview   # preview the production build
 | Featured project cards | the `featured` block in `index.html` |
 | Which repos get a **Live site** button | the `LIVE` map at the top of `src/projects.js` |
 | GitHub account the repo list comes from | `USER` in `src/projects.js` |
-| Camera view and landmark placement for each section | the `CHAPTERS` table at the top of `src/scene.js` |
+| Camera view for each section | the `CHAPTERS` table at the top of `src/scene.js` |
 | Colours and fonts | the `:root` variables at the top of `src/style.css` |
 
 ---

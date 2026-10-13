@@ -425,3 +425,15 @@ section { position: relative; padding: clamp(6rem, 14vh, 10rem) var(--pad); max-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ==========================================================
+   Dusk Valley: keep copy readable over the landscape
+   ========================================================== */
+.contact { position: relative; isolation: isolate; }
+.contact::before {
+  content: ''; position: absolute; z-index: -1; left: 50%; top: clamp(4rem, 12vh, 9rem);
+  width: min(1100px, 96vw); height: min(560px, 70vh); transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(7, 6, 15, 0.62), rgba(7, 6, 15, 0.35) 55%, rgba(7, 6, 15, 0) 100%);
+  pointer-events: none;
+}
+.hero, .statement, .work, .services, .stack, .process, .contact { text-shadow: 0 1px 18px rgba(5, 6, 14, 0.55); }
