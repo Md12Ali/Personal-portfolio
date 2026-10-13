@@ -2,34 +2,34 @@
 
 **Live site:** https://mohammed-ali-portfolio.onrender.com
 
-The personal portfolio of **Mohammed Ali**, a full-stack web developer who also does web design, graphic design, SEO and digital marketing. It's a dark, animated 3D website with a liquid-chrome centrepiece, built with Three.js, GSAP and Vite, and deployed on Render.
+The personal portfolio of **Mohammed Ali**, a full-stack web developer who also does web design, graphic design, SEO and digital marketing. It's a dark, animated 3D website set in one night-time world with a liquid-chrome core, built with Three.js, GSAP and Vite, and deployed on Render.
 
 ---
 
 ## Highlights
 
-- **Molten Chrome 3D studio.** One persistent liquid-chrome sculpture floats behind the whole page. It is lit by an authored photo studio (warm softbox, cool strip lights, ember floor bounce) baked into a PMREM environment map, so its reflections are physically based. Dust motes drift through the light.
-- **Scroll-driven sculpture.** Each section has its own pose: the sculpture moves through the layout, changes shape, twists and shifts its light as you scroll. Your pointer presses a soft bulge into the surface.
+- **One persistent 3D world.** The whole page sits in a single night landscape built with Three.js: a glowing dot-grid sea under an indigo, star-filled sky. At its heart, a liquid-chrome sculpture floats inside a halo ring. The chrome reflects an authored night studio (violet key, cyan strips, lime kicker) baked into a PMREM environment map, so its reflections match the world's colours.
+- **Scroll-driven camera.** Each section has its own camera view of a landmark, framed on the side opposite the text: the chrome core, a row of project pillars (lime tops = live, violet = in progress), four floating glass "stack" layers, and a light path for the process. Your pointer adds gentle parallax and presses a soft bulge into the chrome.
 - **Live GitHub projects.** Every public repository is pulled from the GitHub API in the visitor's browser, so new repos show up without a rebuild. Filter them by language; deployed repos get a **Live site** link.
 - **Editorial work index.** Featured projects are large rows that open on hover or keyboard focus (always open on touch screens).
 - **Motion design.** Intro curtain, letter-by-letter name reveal, headings that rise word by word, a statement that fills with light as you read, a process timeline that draws itself, and a magnetic contact button.
 - **SEO.** Meta, Open Graph image and canonical tags, plus `Person` structured data (JSON-LD).
-- **Accessibility.** Skip link, visible focus, accessible labels on split text, and a reduced-motion mode that shows a rendered poster of the sculpture instead of WebGL, with no smooth scrolling and no animation.
+- **Accessibility.** Skip link, visible focus, accessible labels on split text, and a reduced-motion mode that shows a rendered poster of the world instead of WebGL, with no smooth scrolling and no animation.
 
-### Sculpture pose by section
+### The world, section by section
 
-| Section | Pose |
+| Section | What the camera shows |
 |---|---|
-| Hero | Right of the name, calm liquid surface, ember rim light |
-| About | Moves left, larger slow waves |
-| Work | Small, nearly still, cool light, out of the way of the list |
-| Repositories | Centre, dimmed behind the frosted panel |
-| Services | Left, twisted |
-| Stack | Right, rippled |
-| Process | Left, cool light |
-| Contact | Rises from the bottom of the screen like a sunrise |
+| Hero | The chrome core in its halo ring, right of the name |
+| About | The core from above, on the left |
+| Work | The project pillars, right of the list |
+| Repositories | Open sky and sea behind the frosted panel |
+| Services | The core seen from across the sea, on the left |
+| Stack | The four glass layers, on the right |
+| Process | The light path running into the distance, on the left |
+| Contact | The core rising from the bottom of the screen |
 
-On desktop a light bloom pass adds glow. Phones get a lighter mesh, fewer dust motes and no bloom.
+On desktop a light bloom pass adds glow. Phones get a lighter mesh, fewer points and no bloom.
 
 ---
 
@@ -72,7 +72,7 @@ On desktop a light bloom pass adds glow. Phones get a lighter mesh, fewer dust m
 │   └── og.jpg        # Social share image
 ├── src/
 │   ├── main.js       # Intro, smooth scroll, scroll choreography, nav, contact
-│   ├── scene.js      # The 3D studio: chrome sculpture, studio lighting, dust, bloom
+│   ├── scene.js      # The 3D world: sea, sky, chrome core, landmarks, camera views
 │   ├── projects.js   # Live GitHub repos, filters and live-site links
 │   └── style.css     # All styles and responsive layout
 ├── render.yaml       # Render static-site configuration
@@ -104,7 +104,7 @@ npm run preview   # preview the production build
 | Featured project cards | the `featured` block in `index.html` |
 | Which repos get a **Live site** button | the `LIVE` map at the top of `src/projects.js` |
 | GitHub account the repo list comes from | `USER` in `src/projects.js` |
-| Where the sculpture sits and how it looks in each section | the `POSES` table at the top of `src/scene.js` |
+| Camera view and landmark placement for each section | the `CHAPTERS` table at the top of `src/scene.js` |
 | Colours and fonts | the `:root` variables at the top of `src/style.css` |
 
 ---

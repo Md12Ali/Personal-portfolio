@@ -1,21 +1,25 @@
 /* ==========================================================================
-   Molten Chrome: design tokens
-   One theme (dark), one accent (ember), one radius rule:
+   Night Stack: design tokens (Molten layout, night-world palette)
+   One theme (dark), one accent (lime, aliased as --ember), violet/cyan for light,
+   one radius rule:
    interactive controls are pills, panels and cards are 18px.
    ========================================================================== */
 :root {
-  --bg: #0a0a0b;
-  --bg-2: #111113;
-  --panel: rgba(16, 16, 18, 0.72);
-  --ink: #ece7df;
-  --ink-2: #c9c3ba;
-  --muted: #9a948b;
-  --dim: #7d776f;
-  --line: rgba(236, 231, 223, 0.12);
-  --line-2: rgba(236, 231, 223, 0.22);
-  --ember: #ff5b1f;
-  --ember-soft: rgba(255, 91, 31, 0.14);
-  --on-ember: #160904;
+  --bg: #07060f;
+  --bg-2: #0f0d1c;
+  --panel: rgba(14, 12, 28, 0.72);
+  --ink: #ecebf3;
+  --ink-2: #c8c6d8;
+  --muted: #9a98ad;
+  --dim: #7c7a92;
+  --line: rgba(236, 235, 243, 0.12);
+  --line-2: rgba(236, 235, 243, 0.22);
+  --ember: #d4ff3a;
+  --ember-hover: #e8ff8f;
+  --violet: #8b6bff;
+  --cyan: #36d6ff;
+  --ember-soft: rgba(212, 255, 58, 0.14);
+  --on-ember: #0b0a12;
 
   --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
@@ -24,7 +28,7 @@
   --max: 1400px;
   --r-panel: 18px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --shadow-text: 0 1px 24px rgba(5, 5, 6, 0.65);
+  --shadow-text: 0 1px 24px rgba(5, 4, 12, 0.7);
   --z-stage: 0;
   --z-grain: 2;
   --z-main: 3;
@@ -103,7 +107,7 @@ main { position: relative; z-index: var(--z-main); }
 }
 .btn:active { transform: scale(0.98); }
 .btn--solid { background: var(--ember); color: var(--on-ember); }
-.btn--solid:hover { background: #ff7440; }
+.btn--solid:hover { background: var(--ember-hover); }
 .btn--line { border: 1px solid var(--line-2); background: rgba(10, 10, 11, 0.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .btn--line:hover { border-color: var(--ink); }
 
@@ -333,7 +337,7 @@ section { position: relative; padding: clamp(6rem, 14vh, 10rem) var(--pad); max-
 .process .h2 { grid-column: 2; }
 .timeline { grid-column: 2; list-style: none; margin: 0; padding: 0 0 0 2.2rem; position: relative; display: grid; gap: clamp(2.5rem, 6vh, 4rem); }
 .timeline__rail { position: absolute; left: 0.35rem; top: 0.5rem; bottom: 0.5rem; width: 1px; background: var(--line-2); }
-.timeline__fill { position: absolute; inset: 0; background: var(--ember); transform-origin: top; }
+.timeline__fill { position: absolute; inset: 0; background: linear-gradient(180deg, var(--cyan), var(--violet) 60%, var(--ember)); transform-origin: top; }
 .no-js .timeline__fill, .reduce .timeline__fill { transform: none; }
 .step { position: relative; }
 .step::before {
@@ -355,7 +359,7 @@ section { position: relative; padding: clamp(6rem, 14vh, 10rem) var(--pad); max-
   padding: 0.9rem 1.8rem; border-radius: 999px; background: var(--ember); color: var(--on-ember);
   transition: background-color 0.3s var(--ease);
 }
-.contact__mail:hover { background: #ff7440; }
+.contact__mail:hover { background: var(--ember-hover); }
 .contact__mail iconify-icon { transition: transform 0.4s var(--ease); }
 .contact__mail:hover iconify-icon { transform: translate(4px, -4px); }
 .contact__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
@@ -409,7 +413,7 @@ section { position: relative; padding: clamp(6rem, 14vh, 10rem) var(--pad); max-
   .contact__mail { padding: 0.8rem 1.3rem; font-size: clamp(1.05rem, 5.2vw, 1.6rem); }
 
   /* the sculpture sits behind content on phones: keep copy legible */
-  .statement, .work, .services, .stack, .process { background: linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.55) 18%, rgba(10,10,11,0.55) 82%, rgba(10,10,11,0) 100%); }
+  .statement, .work, .services, .stack, .process { background: linear-gradient(180deg, rgba(7,6,15,0) 0%, rgba(7,6,15,0.72) 14%, rgba(7,6,15,0.72) 86%, rgba(7,6,15,0) 100%); }
 }
 @media (max-width: 420px) {
   .hero__ctas .btn { flex: 1 1 auto; justify-content: center; }

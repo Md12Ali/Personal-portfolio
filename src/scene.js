@@ -1,39 +1,58 @@
 /**
- * The 3D studio behind the page.
+ * Night Stack: one persistent 3D world behind the page.
  *
- * One persistent object: a liquid-chrome sculpture lit by an authored photo
- * studio (warm softbox, cool strip light, floor bounce) that is baked into a
- * PMREM environment map, so every reflection on the metal is physically based.
- * Scrolling morphs the sculpture and moves it through the layout; the pointer
- * pushes a soft bulge into the surface. Dust motes drift in the light.
+ * World bible
+ *  - Place: a dark sea of light-dots under an indigo, star-filled sky.
+ *  - Core: a liquid-chrome sculpture floating inside a halo ring. Its reflections come
+ *    from an authored night studio (violet key, cyan strips, lime kicker) baked into a
+ *    PMREM environment, so the metal mirrors the world's own palette.
+ *  - Landmarks: four floating glass layers (front / server / data / growth), five project
+ *    pillars (lime caps = live, violet = in progress), and a light path into the distance.
+ *  - Motion: each page section owns one authored camera view. The view's landmark is
+ *    framed on the side opposite the copy with a lens shift, so the layout's left/right
+ *    rhythm is kept. Pointer adds clamped parallax and pushes a bulge into the chrome.
  */
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Mesh, Points, Group, Color, Vector2, Vector3,
-  IcosahedronGeometry, SphereGeometry, PlaneGeometry, BufferGeometry, BufferAttribute,
-  MeshPhysicalMaterial, MeshBasicMaterial, ShaderMaterial, PMREMGenerator,
-  BackSide, DoubleSide, AdditiveBlending, ACESFilmicToneMapping, SRGBColorSpace, MathUtils,
+  WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, Points, LineSegments, BufferGeometry,
+  BufferAttribute, PlaneGeometry, SphereGeometry, IcosahedronGeometry, TorusGeometry, BoxGeometry,
+  EdgesGeometry, TubeGeometry, CatmullRomCurve3, ShaderMaterial, MeshBasicMaterial, LineBasicMaterial,
+  MeshPhysicalMaterial, PMREMGenerator, AdditiveBlending, BackSide, DoubleSide, Color, Vector2, Vector3,
+  MathUtils, LinearSRGBColorSpace, NoToneMapping, Quaternion,
 } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-/* ------------------------------------------------------------------ */
-/* Poses: one per page section. x / y are fractions of the visible     */
-/* half-width / half-height, so the layout adapts to any aspect ratio. */
-/* ------------------------------------------------------------------ */
-const EMBER = [1.0, 0.36, 0.12];
-const POSES = {
-  hero:      { x: 0.52,  y: 0.02,  s: 0.92, amp: 0.13, freq: 0.78, twist: 0.0, rim: 0.3,  glow: EMBER,            gi: 0.5,  spin: 0.0, dim: 1.0 },
-  statement: { x: -0.64, y: 0.02,  s: 0.72, amp: 0.24, freq: 0.62, twist: 0.0, rim: 0.4,  glow: [1.0, 0.5, 0.26], gi: 0.38, spin: 1.1, dim: 0.9 },
-  work:      { x: 0.76,  y: -0.04, s: 0.5,  amp: 0.07, freq: 1.0,  twist: 0.0, rim: 0.22, glow: [0.5, 0.6, 1.0],  gi: 0.3,  spin: 2.3, dim: 0.85 },
-  repos:     { x: 0.0,   y: 0.0,   s: 0.8,  amp: 0.18, freq: 0.85, twist: 0.4, rim: 0.2,  glow: [0.6, 0.62, 0.8], gi: 0.22, spin: 3.0, dim: 0.5 },
-  services:  { x: -0.64, y: -0.14, s: 0.62, amp: 0.12, freq: 0.9,  twist: 1.2, rim: 0.32, glow: [1.0, 0.45, 0.2], gi: 0.4,  spin: 3.9, dim: 0.9 },
-  stack:     { x: 0.74,  y: 0.02,  s: 0.52, amp: 0.16, freq: 1.0,  twist: 0.0, rim: 0.3,  glow: [0.75, 0.7, 1.0], gi: 0.32, spin: 4.6, dim: 0.9 },
-  process:   { x: -0.64, y: -0.04, s: 0.6,  amp: 0.1,  freq: 1.1,  twist: 0.6, rim: 0.28, glow: [0.55, 0.65, 1.0], gi: 0.3, spin: 5.4, dim: 0.9 },
-  contact:   { x: 0.0,   y: -0.74, s: 1.35, amp: 0.2,  freq: 0.7,  twist: 0.0, rim: 0.6,  glow: EMBER,            gi: 0.7,  spin: 6.3, dim: 0.85 },
+const C = {
+  night: new Color('#05040c'),
+  horizon: new Color('#2a1760'),
+  cyan: new Color('#36d6ff'),
+  violet: new Color('#8b6bff'),
+  lime: new Color('#d4ff3a'),
+  slab: new Color('#0b0920'),
 };
-const KEYS = ['x', 'y', 's', 'amp', 'freq', 'twist', 'rim', 'gi', 'spin', 'dim'];
+
+const CORE = new Vector3(0, 4.6, -10);
+const LAYERS = new Vector3(18, 0, -12);
+const MONO = new Vector3(-40, 0, -26);
+const PATH_FOCUS = new Vector3(-8, 0.8, -46);
+
+/* Scene ledger, keyed by the page's data-scene names.
+   pos / look: camera position and the point it frames (the landmark).
+   sx: where the landmark sits horizontally (-1 left edge … 1 right edge), opposite the copy.
+   sy: vertical placement (positive = higher). m*: narrow-screen overrides. */
+const CHAPTERS = {
+  hero:      { pos: [0, 4.5, 1.2],    look: CORE.toArray(),        fov: 40, sx: 0.52,  sy: 0.0,   path: 0.6, mpos: [0, 5.0, 3.5],   mfov: 54, msy: 0.42 },
+  statement: { pos: [8.2, 8.4, -1],   look: CORE.toArray(),        fov: 42, sx: -0.62, sy: 0.04,  path: 0.4, mpos: [5, 7.5, -2],    mfov: 56, msy: 0.45 },
+  work:      { pos: [-32, 7, -3.5],   look: [-40, 3.8, -26.5],     fov: 44, sx: 0.7,   sy: 0.0,   path: 0.4, mpos: [-35, 7, -6],    mfov: 58, msy: 0.4 },
+  repos:     { pos: [0, 8, -17],      look: [-2, 6.5, -60],        fov: 50, sx: 0.0,   sy: 0.0,   path: 0.6, mpos: [0, 8, -17],     mfov: 62, msy: 0.2 },
+  services:  { pos: [11, 4.6, -24],   look: CORE.toArray(),        fov: 40, sx: -0.6,  sy: 0.0,   path: 0.3, mpos: [9, 5.5, -25],   mfov: 54, msy: 0.4 },
+  stack:     { pos: [10, 6, -1.5],    look: [18, 3.8, -12],        fov: 44, sx: 0.58,  sy: 0.0,   path: 0.3, mpos: [11, 7.5, 2],    mfov: 56, msy: 0.4 },
+  process:   { pos: [-1.5, 2.8, -31], look: PATH_FOCUS.toArray(),  fov: 48, sx: -0.55, sy: -0.05, path: 1.0, mpos: [-2, 3.6, -30],  mfov: 60, msy: 0.35 },
+  contact:   { pos: [0, 10, -0.5],    look: CORE.toArray(),        fov: 42, sx: 0.0,   sy: -0.7,  path: 0.0, mpos: [0, 13, 4],      mfov: 52, msy: -0.66 },
+};
+const ORDER = Object.keys(CHAPTERS);
 
 /* Ashima simplex noise (MIT) */
 const NOISE = /* glsl */ `
@@ -61,24 +80,156 @@ float snoise(vec3 v){
   return 105.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }`;
 
-/* Build the photo studio that the chrome reflects. */
-function buildStudioEnvironment(renderer) {
+const SKY = {
+  vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform vec3 uNight; uniform vec3 uHorizon; uniform vec3 uViolet; uniform vec3 uCyan; uniform float uTime;
+    varying vec3 vDir;
+    void main(){
+      float h = vDir.y;
+      vec3 col = mix(uHorizon, uNight, smoothstep(-0.02, 0.45, h));
+      // soft violet glow band on the horizon, brighter behind the core
+      float band = exp(-abs(h - 0.02) * 18.0);
+      float focus = pow(max(0.0, dot(normalize(vDir.xz), vec2(0.0, -1.0))), 6.0);
+      col += uViolet * band * (0.25 + 0.55 * focus);
+      col += uCyan * exp(-abs(h - 0.0) * 60.0) * 0.12;
+      col = mix(col, uNight * 0.6, smoothstep(0.0, -0.3, h));
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+};
+
+const STARS = {
+  vertexShader: `
+    attribute float aSize; attribute float aSeed; uniform float uTime; uniform float uPR; varying float vA;
+    void main(){
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mv;
+      float tw = 0.55 + 0.45 * sin(uTime * (0.6 + aSeed * 1.8) + aSeed * 40.0);
+      vA = tw;
+      gl_PointSize = aSize * uPR * (0.8 + tw * 0.6);
+    }`,
+  fragmentShader: `
+    varying float vA;
+    void main(){ float d = length(gl_PointCoord - 0.5); float a = (1.0 - smoothstep(0.0, 0.5, d)) * vA;
+      gl_FragColor = vec4(vec3(0.85, 0.86, 1.0) * a, a); }`,
+};
+
+const OCEAN = {
+  vertexShader: `
+    uniform float uTime; uniform float uPR; uniform vec3 uCore; uniform float uPulse;
+    varying float vH; varying float vD; varying float vGlow;
+    void main(){
+      vec3 p = position;
+      float t = uTime;
+      float h = sin(p.x * 0.32 + t * 0.7) * 0.28 + sin(p.z * 0.24 + t * 0.55) * 0.34
+              + sin((p.x + p.z) * 0.15 - t * 0.4) * 0.42;
+      // ripple rings radiating from under the core
+      float r = length(p.xz - uCore.xz);
+      float ring = sin(r * 1.1 - t * 1.6) * exp(-r * 0.06) * 0.35;
+      h += ring;
+      p.y = h;
+      vH = h;
+      vGlow = exp(-r * 0.09) * (0.6 + 0.4 * uPulse);
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      vD = -mv.z;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = uPR * (1.6 + (h + 1.0) * 0.9) * (16.0 / max(-mv.z, 1.0));
+    }`,
+  fragmentShader: `
+    uniform vec3 uCyan; uniform vec3 uViolet; uniform vec3 uLime; uniform vec3 uFog;
+    varying float vH; varying float vD; varying float vGlow;
+    void main(){
+      float d = length(gl_PointCoord - 0.5);
+      float a = 1.0 - smoothstep(0.15, 0.5, d);
+      vec3 c = mix(uViolet, uCyan, smoothstep(-0.6, 0.7, vH));
+      c = mix(c, uLime, smoothstep(0.85, 1.25, vH) * 0.6);
+      c *= 0.55 + vGlow * 1.6;
+      float fog = exp(-vD * 0.045);
+      gl_FragColor = vec4(c * a * fog, a * fog);
+    }`,
+};
+
+const RING = {
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform float uTime; uniform vec3 uCyan; uniform vec3 uViolet; uniform vec3 uLime; uniform float uWake;
+    varying vec2 vUv;
+    void main(){
+      float a = vUv.x;
+      vec3 col = mix(uViolet, uCyan, 0.5 + 0.5 * sin(a * 6.2832 + uTime * 0.6));
+      float pulse = smoothstep(0.985, 1.0, fract(a - uTime * 0.12));
+      col += uLime * pulse * 2.5;
+      col *= 1.2 + uWake * 0.8;
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+};
+
+const GLOW = {
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform vec3 uColor; uniform float uStrength; varying vec2 vUv;
+    void main(){ float d = length(vUv - 0.5) * 2.0; float a = pow(max(0.0, 1.0 - d), 2.6) * uStrength;
+      gl_FragColor = vec4(uColor * a, a); }`,
+};
+
+const PATH = {
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform float uTime; uniform float uShow; uniform vec3 uCyan; uniform vec3 uLime; varying vec2 vUv;
+    void main(){
+      float dash = smoothstep(0.55, 0.6, fract(vUv.x * 26.0 - uTime * 0.9));
+      vec3 col = uCyan * (0.7 + 0.3 * dash) + uLime * dash * 0.9;
+      float fade = smoothstep(0.0, 0.08, vUv.x) * (1.0 - smoothstep(0.85, 1.0, vUv.x));
+      gl_FragColor = vec4(col * fade * uShow, fade * uShow);
+    }`,
+};
+
+const DUST = {
+  vertexShader: `
+    attribute float aSeed; uniform float uTime; uniform float uPR; varying float vA;
+    void main(){
+      vec3 p = position;
+      p.y = mod(p.y + uTime * (0.15 + aSeed * 0.25), 12.0);
+      p.x += sin(uTime * 0.3 + aSeed * 20.0) * 0.4;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      vA = smoothstep(0.0, 2.0, p.y) * (1.0 - smoothstep(9.0, 12.0, p.y)) * exp(-(-mv.z) * 0.03);
+      gl_PointSize = uPR * (1.0 + aSeed * 2.5) * (14.0 / max(-mv.z, 1.0));
+    }`,
+  fragmentShader: `
+    uniform vec3 uColor; varying float vA;
+    void main(){ float d = length(gl_PointCoord - 0.5); float a = (1.0 - smoothstep(0.0, 0.5, d)) * vA;
+      gl_FragColor = vec4(uColor * a, a); }`,
+};
+
+
+/* ---------------------------------------------------------------- helpers */
+const sstep = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+
+function glowSprite(color, size, strength) {
+  const m = new ShaderMaterial({
+    ...GLOW, transparent: true, depthWrite: false, blending: AdditiveBlending,
+    uniforms: { uColor: { value: color.clone() }, uStrength: { value: strength } },
+  });
+  const mesh = new Mesh(new PlaneGeometry(size, size), m);
+  mesh.userData.billboard = true;
+  return mesh;
+}
+
+/* The night studio the chrome reflects: violet key, cyan strips, lime kicker. */
+function buildNightStudio(renderer) {
   const env = new Scene();
-  const room = new Mesh(new SphereGeometry(20, 32, 16), new MeshBasicMaterial({ color: 0x030304, side: BackSide }));
-  env.add(room);
-  const panel = (w, h, rgb, power, pos) => {
-    const m = new Mesh(new PlaneGeometry(w, h), new MeshBasicMaterial({ color: new Color(rgb[0] * power, rgb[1] * power, rgb[2] * power), side: DoubleSide }));
-    m.position.set(...pos);
-    m.lookAt(0, 0, 0); // face the centre
-    env.add(m);
-    return m;
+  env.add(new Mesh(new SphereGeometry(20, 32, 16), new MeshBasicMaterial({ color: 0x020108, side: BackSide })));
+  const panel = (w, h, col, power, pos) => {
+    const m = new Mesh(new PlaneGeometry(w, h), new MeshBasicMaterial({ color: new Color(col).multiplyScalar(power), side: DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 0, 0); env.add(m);
   };
-  panel(7, 4.2, [1.0, 0.62, 0.38], 7.0, [-6, 4.5, 3.5]);   // warm key softbox
-  panel(0.9, 9, [0.78, 0.86, 1.0], 6.0, [7, 0.5, -1.5]);   // cool strip, right rim
-  panel(0.6, 7, [0.78, 0.86, 1.0], 3.5, [-7.5, -0.5, -3]); // cool strip, left rim
-  panel(10, 10, [1.0, 1.0, 1.0], 0.9, [0, 9, 0]);           // overhead fill
-  panel(14, 14, [1.0, 0.38, 0.14], 0.45, [0, -8, 0]);       // ember floor bounce
-  panel(3, 0.35, [1.0, 0.4, 0.15], 9.0, [2.5, -1.5, 7]);    // thin ember kicker in front
+  panel(7, 4.2, '#8b6bff', 5.5, [-6, 4.5, 3.5]);    // violet key softbox
+  panel(0.9, 9, '#36d6ff', 6.0, [7, 0.5, -1.5]);    // cyan strip, right rim
+  panel(0.6, 7, '#36d6ff', 3.0, [-7.5, -0.5, -3]);  // cyan strip, left rim
+  panel(10, 10, '#d9d6ff', 0.8, [0, 9, 0]);         // cool overhead fill
+  panel(14, 14, '#2a1760', 1.2, [0, -8, 0]);        // indigo sea bounce
+  panel(3, 0.35, '#d4ff3a', 7.0, [2.5, -1.5, 7]);   // thin lime kicker in front
   const pmrem = new PMREMGenerator(renderer);
   const rt = pmrem.fromScene(env, 0.035);
   pmrem.dispose();
@@ -86,96 +237,102 @@ function buildStudioEnvironment(renderer) {
   return rt;
 }
 
+/* ---------------------------------------------------------------- world */
 export function createWorld(canvas, { mobile = false } = {}) {
   const renderer = new WebGLRenderer({ canvas, antialias: !mobile, alpha: false, powerPreference: 'high-performance' });
-  const maxDpr = mobile ? 1.5 : 1.75;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
-  renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
-  renderer.outputColorSpace = SRGBColorSpace;
-  renderer.setClearColor(0x0a0a0b, 1);
+  const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.4 : 1.75);
+  renderer.setPixelRatio(dpr);
+  renderer.setClearColor(C.night, 1);
+  renderer.outputColorSpace = LinearSRGBColorSpace; // world shaders are authored in display space
+  renderer.toneMapping = NoToneMapping;
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0, 8.2);
+  const camera = new PerspectiveCamera(42, 1, 0.1, 200);
+  const disposables = [];
+  const track = (o) => { disposables.push(o); return o; };
+  const uTime = { value: 0 };
+  const uWake = { value: 0 };
+  const shared = { uCyan: { value: C.cyan }, uViolet: { value: C.violet }, uLime: { value: C.lime } };
+  const envRT = buildNightStudio(renderer);
+  /* sky */
+  const sky = new Mesh(track(new SphereGeometry(120, 32, 16)), track(new ShaderMaterial({
+    ...SKY, side: BackSide, depthWrite: false,
+    uniforms: { uNight: { value: C.night }, uHorizon: { value: C.horizon }, uViolet: { value: C.violet }, uCyan: { value: C.cyan }, uTime },
+  })));
+  scene.add(sky);
 
-  const envRT = buildStudioEnvironment(renderer);
-  scene.environment = envRT.texture;
+  /* stars */
+  {
+    const n = mobile ? 1400 : 3000;
+    const pos = new Float32Array(n * 3), size = new Float32Array(n), seed = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const th = Math.random() * Math.PI * 2, y = Math.pow(Math.random(), 0.8) * 0.95 + 0.04;
+      const r = Math.sqrt(1 - y * y);
+      pos.set([Math.cos(th) * r * 110, y * 110, Math.sin(th) * r * 110], i * 3);
+      size[i] = Math.random() < 0.06 ? 3.2 : 1 + Math.random() * 1.4;
+      seed[i] = Math.random();
+    }
+    const g = track(new BufferGeometry());
+    g.setAttribute('position', new BufferAttribute(pos, 3));
+    g.setAttribute('aSize', new BufferAttribute(size, 1));
+    g.setAttribute('aSeed', new BufferAttribute(seed, 1));
+    const stars = new Points(g, track(new ShaderMaterial({ ...STARS, transparent: true, depthWrite: false, blending: AdditiveBlending, uniforms: { uTime, uPR: { value: dpr } } })));
+    stars.frustumCulled = false;
+    scene.add(stars);
+  }
 
-  /* ---------- cyclorama backdrop ---------- */
-  const backdropUniforms = {
-    uGlow: { value: new Color(...EMBER) },
-    uGlowI: { value: POSES.hero.gi },
-    uGlowDir: { value: new Vector3(0.35, -0.25, -1).normalize() },
+  /* ocean of light */
+  {
+    const nx = mobile ? 150 : 240, nz = mobile ? 130 : 210;
+    const pos = new Float32Array(nx * nz * 3);
+    let k = 0;
+    for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
+      pos[k++] = (i / (nx - 1) - 0.5) * 80; pos[k++] = 0; pos[k++] = 22 - (j / (nz - 1)) * 92;
+    }
+    const g = track(new BufferGeometry());
+    g.setAttribute('position', new BufferAttribute(pos, 3));
+    const ocean = new Points(g, track(new ShaderMaterial({
+      ...OCEAN, transparent: true, depthWrite: false, blending: AdditiveBlending,
+      uniforms: { uTime, uPR: { value: dpr }, uCore: { value: CORE }, uPulse: uWake, uFog: { value: C.night }, ...shared },
+    })));
+    ocean.frustumCulled = false;
+    scene.add(ocean);
+  }
+
+  /* core + halo ring */
+  const coreGroup = new Group();
+  coreGroup.position.copy(CORE);
+  scene.add(coreGroup);
+  const sculptU = {
+    uTime: { value: 0 }, uAmp: { value: 0.14 }, uFreq: { value: 0.8 },
+    uPointer: { value: new Vector3(0, 0, 1) }, uBulge: { value: 0 },
+    uRim: { value: 0.55 }, uRimColor: { value: C.cyan.clone() },
   };
-  const backdrop = new Mesh(
-    new SphereGeometry(40, 48, 24),
-    new ShaderMaterial({
-      side: BackSide, depthWrite: false, uniforms: backdropUniforms,
-      vertexShader: /* glsl */ `
-        varying vec3 vDir;
-        void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-      fragmentShader: /* glsl */ `
-        uniform vec3 uGlow; uniform float uGlowI; uniform vec3 uGlowDir; varying vec3 vDir;
-        float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
-        void main(){
-          vec3 d = normalize(vDir);
-          vec3 base = mix(vec3(0.0045,0.0045,0.005), vec3(0.0012,0.0012,0.0014), smoothstep(-0.3, 0.7, d.y));
-          float g = pow(max(dot(d, uGlowDir), 0.0), 9.0);
-          vec3 col = base + uGlow * g * uGlowI * 0.07;
-          col += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
-          gl_FragColor = vec4(col, 1.0);
-          #include <tonemapping_fragment>
-          #include <colorspace_fragment>
-        }`,
-    }),
-  );
-  scene.add(backdrop);
-
-  /* ---------- the sculpture ---------- */
-  const uniforms = {
-    uTime: { value: 0 },
-    uAmp: { value: POSES.hero.amp },
-    uFreq: { value: POSES.hero.freq },
-    uTwist: { value: 0 },
-    uPointer: { value: new Vector3(0, 0, 2) },
-    uBulge: { value: 0 },
-    uRim: { value: POSES.hero.rim },
-    uRimColor: { value: new Color(...EMBER) },
-  };
-  const material = new MeshPhysicalMaterial({
-    color: 0xd4d1cc, metalness: 1, roughness: 0.16,
-    clearcoat: 1, clearcoatRoughness: 0.06,
-    envMapIntensity: 1.1, iridescence: 0.12, iridescenceIOR: 1.6,
-  });
-  material.onBeforeCompile = (shader) => {
-    Object.assign(shader.uniforms, uniforms);
+  const chrome = track(new MeshPhysicalMaterial({
+    color: 0xe4e2f0, metalness: 1, roughness: 0.14, clearcoat: 1, clearcoatRoughness: 0.05,
+    envMap: envRT.texture, envMapIntensity: 2.1, iridescence: 0.25, iridescenceIOR: 1.6,
+  }));
+  chrome.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, sculptU);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>
-        uniform float uTime; uniform float uAmp; uniform float uFreq; uniform float uTwist;
-        uniform vec3 uPointer; uniform float uBulge;
+        uniform float uTime; uniform float uAmp; uniform float uFreq; uniform vec3 uPointer; uniform float uBulge;
         ${NOISE}
         vec3 sculpt(vec3 p){
           vec3 n = normalize(p);
-          float a = uTwist * p.y;
-          float c = cos(a), s = sin(a);
-          vec3 q = vec3(c*p.x - s*p.z, p.y, s*p.x + c*p.z);
-          vec3 qn = vec3(c*n.x - s*n.z, n.y, s*n.x + c*n.z);
           float t = uTime;
-          float f = snoise(q * uFreq + vec3(0.0, t*0.16, t*0.08));
-          f += 0.16 * snoise(q * uFreq * 1.9 - vec3(t*0.12));
+          float f = snoise(p * uFreq + vec3(0.0, t*0.16, t*0.08));
+          f += 0.16 * snoise(p * uFreq * 1.9 - vec3(t*0.12));
           float b = uBulge * smoothstep(1.1, 0.0, distance(n, normalize(uPointer)));
-          return q + qn * (f * uAmp + b);
+          return p + n * (f * uAmp + b);
         }`)
       .replace('#include <beginnormal_vertex>', `
-        vec3 sp = position;
         vec3 sn = normalize(position);
         vec3 tg = normalize(cross(sn, abs(sn.y) < 0.99 ? vec3(0.0,1.0,0.0) : vec3(1.0,0.0,0.0)));
         vec3 bt = normalize(cross(sn, tg));
-        float eps = 0.012;
-        vec3 sd0 = sculpt(sp);
-        vec3 sd1 = sculpt(sp + tg * eps);
-        vec3 sd2 = sculpt(sp + bt * eps);
+        vec3 sd0 = sculpt(position);
+        vec3 sd1 = sculpt(position + tg * 0.012);
+        vec3 sd2 = sculpt(position + bt * 0.012);
         vec3 objectNormal = normalize(cross(sd1 - sd0, sd2 - sd0));
         #ifdef USE_TANGENT
           vec3 objectTangent = vec3(tangent.xyz);
@@ -187,190 +344,242 @@ export function createWorld(canvas, { mobile = false } = {}) {
       .replace('#include <opaque_fragment>', `
         float fres = pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0);
         outgoingLight += uRimColor * fres * uRim;
+        outgoingLight = pow(max(outgoingLight, vec3(0.0)), vec3(1.0 / 2.2)) * 0.92;
         #include <opaque_fragment>`);
   };
-  const detail = mobile ? 30 : 64;
-  const sculpture = new Mesh(new IcosahedronGeometry(1.2, detail), material);
-  const rig = new Group();
-  rig.add(sculpture);
-  scene.add(rig);
+  const core = new Mesh(track(new IcosahedronGeometry(1.35, mobile ? 30 : 64)), chrome);
+  coreGroup.add(core);
+  const ringMat = track(new ShaderMaterial({ ...RING, uniforms: { uTime, uWake, ...shared } }));
+  const ring = new Mesh(track(new TorusGeometry(2.3, 0.045, 16, 260)), ringMat);
+  coreGroup.add(ring);
+  const ring2 = new Mesh(track(new TorusGeometry(2.62, 0.014, 8, 260)), track(new MeshBasicMaterial({ color: C.violet, transparent: true, opacity: 0.7, blending: AdditiveBlending, depthWrite: false })));
+  ring2.rotation.x = 0.25;
+  coreGroup.add(ring2);
+  const halo = glowSprite(C.violet, 9, 0.35); coreGroup.add(halo); track(halo.geometry); track(halo.material);
+  const coreGlow = glowSprite(C.cyan, 5, 0.22); coreGroup.add(coreGlow); track(coreGlow.geometry); track(coreGlow.material);
+  // reflection column on the sea under the core
+  const column = glowSprite(C.cyan, 1, 0.35); track(column.geometry); track(column.material);
+  column.userData.billboard = false;
+  column.scale.set(2.2, 9, 1); column.position.set(CORE.x, 0.4, CORE.z); column.rotation.x = -Math.PI / 2;
+  scene.add(column);
 
-  /* ---------- dust in the light ---------- */
-  const COUNT = mobile ? 650 : 1800;
-  const pos = new Float32Array(COUNT * 3);
-  const seed = new Float32Array(COUNT);
-  for (let i = 0; i < COUNT; i++) {
-    pos[i * 3] = MathUtils.randFloatSpread(14);
-    pos[i * 3 + 1] = MathUtils.randFloatSpread(8);
-    pos[i * 3 + 2] = MathUtils.randFloat(-5, 4);
-    seed[i] = Math.random();
+  /* stack layers: front / server / data / growth */
+  const layers = new Group();
+  layers.position.copy(LAYERS);
+  scene.add(layers);
+  const slabMat = track(new MeshBasicMaterial({ color: C.slab, transparent: true, opacity: 0.72, depthWrite: false }));
+  const layerColors = [C.cyan, C.violet, C.cyan, C.lime];
+  const layerGeo = track(new BoxGeometry(5.2, 0.16, 3.2));
+  const layerEdges = track(new EdgesGeometry(layerGeo));
+  const layerItems = layerColors.map((col, i) => {
+    const g = new Group();
+    g.position.y = 1.6 + i * 1.35;
+    g.add(new Mesh(layerGeo, slabMat));
+    const e = new LineSegments(layerEdges, track(new LineBasicMaterial({ color: col, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false })));
+    g.add(e);
+    const gl = glowSprite(col, 4.5, 0.18); track(gl.material); track(gl.geometry); g.add(gl);
+    g.userData = { phase: i * 0.9 };
+    layers.add(g);
+    return g;
+  });
+  // vertical data beams joining the layers
+  {
+    const pts = [];
+    [[-2.3, -1.3], [2.3, -1.3], [-2.3, 1.3], [2.3, 1.3]].forEach(([x, z]) => { pts.push(x, 1.6, z, x, 1.6 + 3 * 1.35, z); });
+    const g = track(new BufferGeometry()); g.setAttribute('position', new BufferAttribute(new Float32Array(pts), 3));
+    layers.add(new LineSegments(g, track(new LineBasicMaterial({ color: C.cyan, transparent: true, opacity: 0.3, blending: AdditiveBlending, depthWrite: false }))));
   }
-  const dustGeo = new BufferGeometry();
-  dustGeo.setAttribute('position', new BufferAttribute(pos, 3));
-  dustGeo.setAttribute('aSeed', new BufferAttribute(seed, 1));
-  const dustUniforms = { uTime: { value: 0 }, uPx: { value: renderer.getPixelRatio() }, uColor: { value: new Color(1.0, 0.72, 0.5) } };
-  const dust = new Points(dustGeo, new ShaderMaterial({
-    uniforms: dustUniforms, transparent: true, depthWrite: false, blending: AdditiveBlending,
-    vertexShader: /* glsl */ `
-      uniform float uTime; uniform float uPx; attribute float aSeed; varying float vA;
-      void main(){
-        vec3 p = position;
-        p.y = mod(position.y + 4.0 + uTime * (0.04 + aSeed * 0.06), 8.0) - 4.0;
-        p.x += sin(uTime * 0.2 + aSeed * 40.0) * 0.25;
-        p.z += cos(uTime * 0.15 + aSeed * 23.0) * 0.2;
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        gl_Position = projectionMatrix * mv;
-        float near = smoothstep(0.0, 1.0, 1.0 - abs(-mv.z - 7.5) / 6.0);
-        vA = (0.15 + 0.85 * fract(aSeed * 7.31)) * near * (0.55 + 0.45 * sin(uTime * (0.6 + aSeed) + aSeed * 30.0));
-        gl_PointSize = uPx * (1.2 + aSeed * 2.4) * (8.0 / -mv.z);
-      }`,
-    fragmentShader: /* glsl */ `
-      uniform vec3 uColor; varying float vA;
-      void main(){
-        float d = length(gl_PointCoord - 0.5);
-        float a = smoothstep(0.5, 0.0, d);
-        gl_FragColor = vec4(uColor * a * vA * 0.55, 1.0);
-      }`,
-  }));
-  scene.add(dust);
 
-  /* ---------- post ---------- */
+  /* project monoliths: 3 live (lime), 2 in progress (violet) */
+  const monos = new Group();
+  scene.add(monos);
+  const monoDefs = [[-6, 5.2, true], [-3, 6.6, true], [0, 7.6, true], [3, 5.8, false], [6, 4.8, false]].map(([x, h, l]) => [MONO.x + x, h, l]);
+  const monoItems = monoDefs.map(([x, h, live], i) => {
+    const g = new Group();
+    g.position.set(x, 0, MONO.z - Math.abs(x - MONO.x) * 0.25);
+    const geo = track(new BoxGeometry(1.5, h, 0.6));
+    const m = new Mesh(geo, slabMat); m.position.y = h / 2 + 0.6; g.add(m);
+    const col = live ? C.lime : C.violet;
+    const e = new LineSegments(track(new EdgesGeometry(geo)), track(new LineBasicMaterial({ color: live ? C.cyan : C.violet, transparent: true, opacity: 0.85, blending: AdditiveBlending, depthWrite: false })));
+    e.position.copy(m.position); g.add(e);
+    const cap = new Mesh(track(new BoxGeometry(1.5, 0.08, 0.6)), track(new MeshBasicMaterial({ color: col })));
+    cap.position.y = h + 0.64; g.add(cap);
+    const capGlow = glowSprite(col, 3.2, live ? 0.6 : 0.4); track(capGlow.geometry); track(capGlow.material);
+    capGlow.position.y = h + 0.7; g.add(capGlow);
+    g.userData = { baseY: 0, phase: i * 1.3 };
+    monos.add(g);
+    return g;
+  });
+
+  /* light path for the process */
+  const curve = new CatmullRomCurve3([
+    new Vector3(-3, 0.25, -30), new Vector3(-5.5, 0.25, -38), new Vector3(-8, 0.25, -46),
+    new Vector3(-12, 0.25, -58), new Vector3(-15, 0.25, -70),
+  ]);
+  const pathMat = track(new ShaderMaterial({ ...PATH, transparent: true, depthWrite: false, blending: AdditiveBlending, uniforms: { uTime, uShow: { value: 0.6 }, ...shared } }));
+  scene.add(new Mesh(track(new TubeGeometry(curve, 240, 0.07, 8, false)), pathMat));
+  const beacons = [0.18, 0.4, 0.62, 0.84].map((t, i) => {
+    const b = glowSprite(i % 2 ? C.cyan : C.lime, 1.6, 0.9); track(b.geometry); track(b.material);
+    b.position.copy(curve.getPointAt(t)).add(new Vector3(0, 0.35, 0));
+    scene.add(b);
+    return b;
+  });
+
+  /* rising dust */
+  {
+    const n = mobile ? 500 : 1200;
+    const pos = new Float32Array(n * 3), seed = new Float32Array(n);
+    for (let i = 0; i < n; i++) { pos.set([(Math.random() - 0.5) * 50, Math.random() * 12, 10 - Math.random() * 70], i * 3); seed[i] = Math.random(); }
+    const g = track(new BufferGeometry());
+    g.setAttribute('position', new BufferAttribute(pos, 3)); g.setAttribute('aSeed', new BufferAttribute(seed, 1));
+    const dust = new Points(g, track(new ShaderMaterial({ ...DUST, transparent: true, depthWrite: false, blending: AdditiveBlending, uniforms: { uTime, uPR: { value: dpr }, uColor: { value: C.cyan } } })));
+    dust.frustumCulled = false;
+    scene.add(dust);
+  }
+
+  /* post */
   let composer = null;
-  let bloom = null;
   if (!mobile) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    bloom = new UnrealBloomPass(new Vector2(1, 1), 0.22, 0.5, 0.9);
-    composer.addPass(bloom);
+    composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.55, 0.5, 0.5));
     composer.addPass(new OutputPass());
   }
 
-  /* ---------- state ---------- */
-  const order = Object.keys(POSES);
-  const cur = { ...POSES.hero };
-  const tgt = { ...POSES.hero };
-  const glowCur = new Color(...EMBER);
-  const glowTgt = new Color(...EMBER);
-  const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: 0 };
+  /* ---------------------------------------------------------------- state */
+  let width = 0, height = 0, narrow = false;
+  const cur = { pos: new Vector3(), look: new Vector3(), fov: 42, sx: 0, sy: 0, path: 0.6 };
+  const tgt = { pos: new Vector3(), look: new Vector3(), fov: 42, sx: 0, sy: 0, path: 0.6 };
+  const pointer = { tx: 0, ty: 0, x: 0, y: 0, active: 0 };
   let velocity = 0;
-  let halfW = 1;
-  let halfH = 1;
-  let narrow = false;
-  let raf = 0;
-  let running = false;
-  let last = performance.now();
-  let elapsed = 0;
+  let raf = 0, running = false, last = performance.now(), time = 0, intro = 0;
+  const introFrom = new Vector3(0, 20, 30);
+  const tmpA = new Vector3(), tmpP = new Vector3(), invQ = new Quaternion();
+
+  function chapterView(name, out) {
+    const c = CHAPTERS[name];
+    out.pos.fromArray(narrow && c.mpos ? c.mpos : c.pos);
+    out.look.fromArray(c.look);
+    out.fov = narrow ? c.mfov : c.fov;
+    out.sx = narrow ? 0 : c.sx;
+    out.sy = narrow ? c.msy : c.sy;
+    out.path = c.path;
+    return out;
+  }
+  const vA = { pos: new Vector3(), look: new Vector3() }, vB = { pos: new Vector3(), look: new Vector3() };
+  let section = 'hero', sectionProgress = 0;
+
+  function applySection() {
+    const i = Math.max(0, ORDER.indexOf(section));
+    const j = Math.min(i + 1, ORDER.length - 1);
+    const k = sstep(MathUtils.smoothstep(sectionProgress, 0.55, 1.0));
+    chapterView(ORDER[i], vA); chapterView(ORDER[j], vB);
+    tgt.pos.copy(vA.pos).lerp(vB.pos, k);
+    tgt.look.copy(vA.look).lerp(vB.look, k);
+    tgt.fov = MathUtils.lerp(vA.fov, vB.fov, k);
+    tgt.sx = MathUtils.lerp(vA.sx, vB.sx, k);
+    tgt.sy = MathUtils.lerp(vA.sy, vB.sy, k);
+    tgt.path = MathUtils.lerp(vA.path, vB.path, k);
+  }
 
   function resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    renderer.setSize(w, h, false);
-    composer && composer.setSize(w, h);
-    bloom && bloom.setSize(w, h);
-    camera.aspect = w / h;
-    narrow = camera.aspect < 0.8;
-    camera.fov = narrow ? 40 : 30;
-    camera.updateProjectionMatrix();
-    halfH = Math.tan(MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
-    halfW = halfH * camera.aspect;
+    width = window.innerWidth; height = window.innerHeight;
+    narrow = width < 860 || width / height < 0.9;
+    renderer.setSize(width, height, false);
+    if (composer) composer.setSize(width, height);
+    camera.aspect = width / height;
+    applySection();
   }
 
   function setSection(name, progress = 0) {
-    const i = order.indexOf(name);
-    if (i < 0) return;
-    const a = POSES[order[i]];
-    const b = POSES[order[Math.min(i + 1, order.length - 1)]];
-    const k = MathUtils.smoothstep(progress, 0.6, 1.0);
-    for (const key of KEYS) tgt[key] = MathUtils.lerp(a[key], b[key], k);
-    glowTgt.setRGB(...a.glow).lerp(new Color(...b.glow), k);
+    if (!CHAPTERS[name]) return;
+    section = name; sectionProgress = progress;
+    applySection();
   }
 
-  function setPointer(nx, ny) { pointer.tx = nx; pointer.ty = ny; pointer.active = 1; }
-  function setVelocity(v) { velocity = MathUtils.clamp(v, -3, 3); }
-
-  const tmp = new Vector3();
+  let first = true;
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min((now - last) / 1000, 1 / 20);
-    last = now;
-    elapsed += dt * (1 + Math.abs(velocity) * 0.6);
+    const dt = Math.min((now - last) / 1000, 1 / 30);
+    last = now; time += dt * (1 + Math.min(Math.abs(velocity), 2) * 0.4);
+    uTime.value = time;
+    intro = Math.min(1, intro + dt / 2.6);
     velocity *= 0.9;
 
-    const ease = 1 - Math.exp(-dt * 2.6);
-    for (const key of KEYS) cur[key] += (tgt[key] - cur[key]) * ease;
-    glowCur.lerp(glowTgt, ease);
-    pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 5));
-    pointer.y += (pointer.ty - pointer.y) * (1 - Math.exp(-dt * 5));
+    const ease = first ? 1 : 1 - Math.exp(-dt * 2.4);
+    first = false;
+    cur.pos.lerp(tgt.pos, ease);
+    cur.look.lerp(tgt.look, ease);
+    cur.fov += (tgt.fov - cur.fov) * ease;
+    cur.sx += (tgt.sx - cur.sx) * ease;
+    cur.sy += (tgt.sy - cur.sy) * ease;
+    cur.path += (tgt.path - cur.path) * ease;
+    pathMat.uniforms.uShow.value = cur.path;
+    pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 3));
+    pointer.y += (pointer.ty - pointer.y) * (1 - Math.exp(-dt * 3));
 
-    // layout: narrow screens keep the sculpture centred and higher up
-    const px = narrow ? 0 : cur.x * halfW;
-    const py = narrow ? cur.y * halfH + halfH * 0.36 : cur.y * halfH;
-    const scale = cur.s * (narrow ? 0.78 : 1) * Math.min(1, halfW / 2.2 + 0.25);
-    rig.position.set(px, py + Math.sin(elapsed * 0.6) * 0.06, 0);
-    rig.scale.setScalar(scale);
-    sculpture.rotation.y = elapsed * 0.12 + cur.spin + pointer.x * 0.35;
-    sculpture.rotation.x = Math.sin(elapsed * 0.17) * 0.18 - pointer.y * 0.25;
+    // camera: authored view, intro fly-in, clamped pointer parallax
+    const ie = 1 - Math.pow(1 - intro, 3);
+    tmpP.copy(introFrom).lerp(cur.pos, ie);
+    const par = narrow ? 0.2 : 0.5;
+    tmpP.x += pointer.x * par; tmpP.y += pointer.y * par * 0.5;
+    camera.position.copy(tmpP);
+    camera.lookAt(cur.look);
+    camera.fov = cur.fov;
+    // lens shift: put the framed landmark at (sx, sy) instead of the centre
+    camera.setViewOffset(width, height, -cur.sx * width / 2, cur.sy * height / 2, width, height);
+    camera.updateProjectionMatrix();
 
-    uniforms.uTime.value = elapsed;
-    uniforms.uAmp.value = cur.amp + Math.min(Math.abs(velocity) * 0.04, 0.12);
-    uniforms.uFreq.value = cur.freq;
-    uniforms.uTwist.value = cur.twist;
-    uniforms.uRim.value = cur.rim;
-    uniforms.uRimColor.value.copy(glowCur);
-    uniforms.uBulge.value += ((pointer.active ? 0.16 : 0) - uniforms.uBulge.value) * ease;
-    // pointer direction in the sculpture's local space
-    tmp.set(pointer.x * 1.4, pointer.y * 1.0, 1.0).normalize();
-    tmp.applyQuaternion(sculpture.quaternion.clone().invert());
-    uniforms.uPointer.value.copy(tmp);
+    // chrome core
+    const s = 0.3 + 0.7 * ie;
+    coreGroup.position.y = CORE.y + Math.sin(time * 0.8) * 0.12;
+    coreGroup.scale.setScalar(s);
+    core.rotation.y = time * 0.12 + pointer.x * 0.35;
+    core.rotation.x = Math.sin(time * 0.17) * 0.18 - pointer.y * 0.25;
+    sculptU.uTime.value = time;
+    sculptU.uAmp.value = 0.14 + Math.min(Math.abs(velocity) * 0.04, 0.12);
+    sculptU.uBulge.value += ((pointer.active ? 0.16 : 0) - sculptU.uBulge.value) * (1 - Math.exp(-dt * 3));
+    tmpA.set(pointer.x * 1.4, pointer.y, 1).normalize().applyQuaternion(invQ.copy(core.quaternion).invert());
+    sculptU.uPointer.value.copy(tmpA);
+    sculptU.uRimColor.value.copy(C.cyan).lerp(C.violet, 0.5 + 0.5 * Math.sin(time * 0.3));
+    chrome.envMapRotation.y = time * 0.05 + pointer.x * 0.25;
 
-    material.envMapIntensity = 1.1 * cur.dim;
-    material.envMapRotation.y = cur.spin * 0.35 + pointer.x * 0.25;
-    backdropUniforms.uGlow.value.copy(glowCur);
-    backdropUniforms.uGlowI.value = cur.gi;
-    backdropUniforms.uGlowDir.value.set(px * 0.12 + 0.05, py * 0.12 - 0.2, -1).normalize();
-    dustUniforms.uTime.value = elapsed;
-
-    camera.position.x = pointer.x * 0.18;
-    camera.position.y = pointer.y * 0.12;
-    camera.lookAt(0, 0, 0);
+    ring.rotation.z = time * 0.05;
+    ring2.rotation.y = Math.sin(time * 0.3) * 0.25;
+    ring2.rotation.z = -time * 0.08;
+    layerItems.forEach((g, i) => { g.position.y = 1.6 + i * 1.35 + Math.sin(time * 0.7 + g.userData.phase) * 0.12; g.rotation.y = Math.sin(time * 0.25 + i) * 0.06; });
+    monoItems.forEach((g) => { g.position.y = Math.sin(time * 0.5 + g.userData.phase) * 0.15; });
+    beacons.forEach((b, i) => { b.material.uniforms.uStrength.value = (0.6 + 0.4 * Math.sin(time * 2 + i * 1.5)) * cur.path; });
+    billboards.forEach((o) => o.quaternion.copy(camera.quaternion));
 
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
-  function start() {
-    if (running) return;
-    running = true;
-    last = performance.now();
-    raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    cancelAnimationFrame(raf);
-  }
+  function start() { if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
+  function stop() { running = false; cancelAnimationFrame(raf); raf = 0; }
+  function setPointer(x, y) { pointer.tx = x; pointer.ty = y; pointer.active = x !== 0 || y !== 0 ? 1 : 0; }
+  function setVelocity(v) { velocity = MathUtils.clamp(v, -3, 3); }
 
-  const onVisibility = () => (document.hidden ? stop() : start());
-  document.addEventListener('visibilitychange', onVisibility);
-  const onResize = () => resize();
-  window.addEventListener('resize', onResize);
+  const onVis = () => (document.hidden ? stop() : start());
+  document.addEventListener('visibilitychange', onVis);
+  window.addEventListener('resize', resize);
   resize();
-
-  // compile shaders up front so the first visible frame is not a hitch
+  const billboards = [];
+  scene.traverse((o) => { if (o.userData.billboard) billboards.push(o); });
   renderer.compile(scene, camera);
 
   function renderOnce() { frame(performance.now()); cancelAnimationFrame(raf); }
-
   function dispose() {
     stop();
-    document.removeEventListener('visibilitychange', onVisibility);
-    window.removeEventListener('resize', onResize);
-    scene.traverse((o) => {
-      if (o.geometry) o.geometry.dispose();
-      if (o.material) o.material.dispose();
-    });
+    document.removeEventListener('visibilitychange', onVis);
+    window.removeEventListener('resize', resize);
+    disposables.forEach((d) => d.dispose && d.dispose());
     envRT.dispose();
-    composer && composer.dispose();
+    if (composer) composer.dispose();
     renderer.dispose();
   }
 
-  return { start, stop, setSection, setPointer, setVelocity, resize, renderOnce, dispose, renderer };
+  function snap() { first = true; intro = 1; }
+
+  return { start, stop, setSection, setPointer, setVelocity, resize, renderOnce, dispose, snap, renderer };
 }

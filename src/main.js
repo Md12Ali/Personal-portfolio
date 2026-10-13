@@ -145,6 +145,8 @@ if (world) {
   window.addEventListener('blur', () => world.setPointer(0, 0));
   document.addEventListener('pointerleave', () => world.setPointer(0, 0));
   world.start();
+  // test hook: ?snap lets automated screenshots jump the camera to each section's final view
+  if (/[?&]snap\b/.test(location.search)) window.__world = world;
 }
 
 /* ---------------- Intro + hero choreography ---------------- */
