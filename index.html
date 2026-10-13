@@ -2,330 +2,320 @@
 <html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mohammed Ali — Full-Stack Developer, Web Designer & SEO</title>
-  <meta name="description" content="Mohammed Ali is a full-stack web developer building fast, interactive 3D websites with JavaScript, PHP, Python, Three.js and MySQL — plus web design, graphic design, SEO and digital marketing." />
-  <meta name="theme-color" content="#07070b" />
-  <meta property="og:title" content="Mohammed Ali — Full-Stack Developer" />
-  <meta property="og:description" content="Full-stack development, 3D web experiences, web & graphic design, SEO and digital marketing." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mohammed Ali | Full-Stack Developer, 3D Web &amp; Design</title>
+  <meta name="description" content="Mohammed Ali is a full-stack web developer who builds fast, interactive 3D websites with JavaScript, PHP, Python, Three.js and MySQL, and offers web design, graphic design, SEO and digital marketing." />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:title" content="Mohammed Ali | Full-Stack Developer" />
+  <meta property="og:description" content="Full-stack development, 3D web experiences, web and graphic design, SEO and digital marketing." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://mohammed-ali-portfolio.onrender.com" />
+  <meta property="og:url" content="https://mohammed-ali-portfolio.onrender.com/" />
+  <meta property="og:image" content="https://mohammed-ali-portfolio.onrender.com/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://mohammed-ali-portfolio.onrender.com/" />
-  <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" as="image" href="/poster.jpg" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"https://mohammed-ali-portfolio.onrender.com","email":"mailto:md077ali@gmail.com","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
+  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"https://mohammed-ali-portfolio.onrender.com/","email":"mailto:md077ali@gmail.com","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
   </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
-  <!-- Loader -->
-  <div class="loader" aria-hidden="true">
-    <div class="loader__count"><span class="loader__num">0</span><span class="loader__pct">%</span></div>
-    <div class="loader__bar"><span></span></div>
+  <!-- Intro curtain -->
+  <div class="intro" aria-hidden="true">
+    <div class="intro__inner">
+      <span class="intro__name">Mohammed Ali</span>
+      <span class="intro__bar"><span></span></span>
+    </div>
   </div>
 
-  <!-- 3D world -->
-  <div class="world" aria-hidden="true">
-    <div class="world__poster"></div>
-    <canvas class="world__canvas"></canvas>
+  <!-- 3D studio: one persistent chrome sculpture behind the whole page -->
+  <div class="stage" aria-hidden="true">
+    <img class="stage__poster" src="/poster.jpg" alt="" width="1600" height="1000" decoding="async" />
+    <canvas class="stage__canvas"></canvas>
   </div>
   <div class="grain" aria-hidden="true"></div>
 
-  <!-- Cursor -->
-  <div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><span class="cursor__label"></span></span></div>
-
-  <div class="progress" aria-hidden="true"><span></span></div>
-  <a href="#top" class="totop" aria-label="Back to top">
-    <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" class="totop__track"/><circle cx="24" cy="24" r="22" class="totop__bar"/></svg>
-    <iconify-icon icon="solar:arrow-up-linear"></iconify-icon>
-  </a>
-
   <header class="nav">
-    <a href="#top" class="nav__logo" aria-label="Mohammed Ali — home">
-      <span class="nav__mark">MA</span>
+    <a href="#top" class="nav__logo" aria-label="Mohammed Ali, back to top">
+      <span class="nav__mark" aria-hidden="true">MA</span>
       <span class="nav__name">Mohammed Ali</span>
     </a>
     <nav class="nav__links" aria-label="Primary">
       <a href="#work">Work</a>
       <a href="#services">Services</a>
-      <a href="#stack">Stack</a>
       <a href="#process">Process</a>
+      <a href="#contact">Contact</a>
     </nav>
-    <a href="mailto:md077ali@gmail.com" class="nav__cta" data-magnetic><span class="pulse"></span>Hire me</a>
-    <button class="nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+    <a href="#contact" class="nav__cta">Start a project</a>
+    <button class="nav__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </header>
 
   <div class="menu" id="menu" hidden>
     <nav aria-label="Mobile">
       <a href="#work">Work</a>
       <a href="#services">Services</a>
-      <a href="#stack">Stack</a>
       <a href="#process">Process</a>
       <a href="#contact">Contact</a>
     </nav>
+    <p class="menu__mail"><a href="mailto:md077ali@gmail.com">md077ali@gmail.com</a></p>
   </div>
 
   <main id="main">
     <!-- HERO -->
-    <section class="hero" id="top" data-shape="0">
+    <section class="hero" id="top" data-scene="hero">
       <div class="hero__inner">
-        <p class="eyebrow hero__eyebrow"><span class="eyebrow__line"></span><span data-scramble>Full-stack developer · Designer · SEO</span></p>
+        <p class="hero__kicker">Full-stack developer &amp; designer</p>
         <h1 class="hero__title" aria-label="Mohammed Ali">
-          <span class="hero__row"><span class="hero__word">Mohammed</span></span>
-          <span class="hero__row"><span class="hero__word">Ali<em>.</em></span></span>
+          <span class="hero__line"><span class="hero__word">Mohammed</span></span>
+          <span class="hero__line"><span class="hero__word">Ali</span></span>
         </h1>
-        <div class="hero__roles" aria-hidden="true">
-          <span>I craft</span>
-          <div class="hero__roles-track"><b>3D web experiences</b><b>Full-stack web apps</b><b>Brands &amp; graphics</b><b>SEO that ranks</b></div>
-        </div>
-        <p class="hero__lede">I build websites as one living system — from the <strong>MySQL</strong> schema to the <strong>Three.js</strong> pixel to the search result that brings people in.</p>
+        <p class="hero__lede">I build fast, 3D web experiences from the database to the last pixel, then help people find them.</p>
         <div class="hero__ctas">
-          <a href="#work" class="btn btn--solid" data-magnetic data-cursor="View">See my work <iconify-icon icon="solar:arrow-right-down-linear"></iconify-icon></a>
-          <a href="mailto:md077ali@gmail.com" class="btn btn--ghost" data-magnetic><iconify-icon icon="solar:letter-linear"></iconify-icon> Email me</a>
+          <a href="#work" class="btn btn--solid" data-magnetic>View work <iconify-icon icon="solar:arrow-right-down-linear" aria-hidden="true"></iconify-icon></a>
+          <a href="#contact" class="btn btn--line">Start a project</a>
         </div>
       </div>
-      <a href="#about" class="hero__scroll" aria-label="Scroll to about"><span></span></a>
+      <dl class="hero__facts">
+        <div><dt>Core stack</dt><dd>JavaScript, PHP, Python</dd></div>
+        <div><dt>Focus</dt><dd>3D web, full-stack, SEO</dd></div>
+        <div><dt>Status</dt><dd>Open to new projects</dd></div>
+      </dl>
     </section>
 
-    <!-- MARQUEE -->
-    <div class="marquee" aria-label="Technologies">
-      <div class="marquee__track">
-        <div class="marquee__group">
-          <span><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript</span>
-          <span><iconify-icon icon="logos:php"></iconify-icon>PHP</span>
-          <span><iconify-icon icon="logos:python"></iconify-icon>Python</span>
-          <span><iconify-icon icon="logos:html-5"></iconify-icon>HTML5</span>
-          <span><iconify-icon icon="logos:css-3"></iconify-icon>CSS3</span>
-          <span><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js</span>
-          <span><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL</span>
-          <span><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL</span>
-        </div>
-        <div class="marquee__group" aria-hidden="true">
-          <span><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript</span>
-          <span><iconify-icon icon="logos:php"></iconify-icon>PHP</span>
-          <span><iconify-icon icon="logos:python"></iconify-icon>Python</span>
-          <span><iconify-icon icon="logos:html-5"></iconify-icon>HTML5</span>
-          <span><iconify-icon icon="logos:css-3"></iconify-icon>CSS3</span>
-          <span><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js</span>
-          <span><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL</span>
-          <span><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ABOUT -->
-    <section class="about section" id="about" data-shape="1">
-      <p class="eyebrow"><span class="eyebrow__num">01</span>About</p>
-      <p class="about__text" data-reveal-words>I'm Mohammed Ali, a full-stack developer who treats a website as one system. The database, the PHP and Python on the server, the JavaScript and Three.js in the browser, the design that makes people stay — and the SEO and marketing that bring them in. I own every layer, so nothing gets lost between them.</p>
-      <div class="about__grid">
-        <div class="about__cell"><span class="about__k">Build</span><p>Full-stack web apps, APIs and databases that stay fast as they grow.</p></div>
-        <div class="about__cell"><span class="about__k">Design</span><p>Interfaces, brand identities and graphics with a clear point of view.</p></div>
-        <div class="about__cell"><span class="about__k">Grow</span><p>Technical SEO and digital marketing that turn visits into results.</p></div>
-      </div>
-    </section>
-
-    <!-- SERVICES -->
-    <section class="services section" id="services" data-shape="2">
-      <div class="section__head">
-        <p class="eyebrow"><span class="eyebrow__num">02</span>Services</p>
-        <h2 class="h2" data-split>What I can do for you</h2>
-      </div>
-      <ol class="services__list">
-        <li class="service" data-cursor="Open">
-          <span class="service__num">01</span>
-          <h3 class="service__title">Full-stack development</h3>
-          <p class="service__desc">End-to-end web apps: secure PHP & Python back ends, clean SQL data models, and fast JavaScript front ends.</p>
-          <ul class="service__tags"><li>PHP</li><li>Python</li><li>MySQL</li><li>REST APIs</li></ul>
-        </li>
-        <li class="service" data-cursor="Open">
-          <span class="service__num">02</span>
-          <h3 class="service__title">3D & interactive web</h3>
-          <p class="service__desc">Immersive Three.js scenes, shaders and scroll-driven motion that make a brand impossible to forget.</p>
-          <ul class="service__tags"><li>Three.js</li><li>WebGL</li><li>GSAP</li></ul>
-        </li>
-        <li class="service" data-cursor="Open">
-          <span class="service__num">03</span>
-          <h3 class="service__title">Web design</h3>
-          <p class="service__desc">Modern, responsive UI/UX — wireframes to polished interfaces that are easy to use on every screen.</p>
-          <ul class="service__tags"><li>UI/UX</li><li>Responsive</li><li>Prototyping</li></ul>
-        </li>
-        <li class="service" data-cursor="Open">
-          <span class="service__num">04</span>
-          <h3 class="service__title">Graphic design</h3>
-          <p class="service__desc">Logos, brand identities, social media graphics and print — visuals that look like they belong together.</p>
-          <ul class="service__tags"><li>Branding</li><li>Logos</li><li>Social</li></ul>
-        </li>
-        <li class="service" data-cursor="Open">
-          <span class="service__num">05</span>
-          <h3 class="service__title">SEO</h3>
-          <p class="service__desc">Technical and on-page SEO: site speed, structured data, content and keywords that help you rank and stay ranked.</p>
-          <ul class="service__tags"><li>Technical SEO</li><li>Core Web Vitals</li><li>Content</li></ul>
-        </li>
-        <li class="service" data-cursor="Open">
-          <span class="service__num">06</span>
-          <h3 class="service__title">Digital marketing</h3>
-          <p class="service__desc">Campaigns, social strategy and analytics that put your product in front of the right people.</p>
-          <ul class="service__tags"><li>Social</li><li>Campaigns</li><li>Analytics</li></ul>
-        </li>
-      </ol>
-    </section>
-
-    <!-- STACK -->
-    <section class="stack section" id="stack" data-shape="3">
-      <div class="section__head">
-        <p class="eyebrow"><span class="eyebrow__num">03</span>Stack</p>
-        <h2 class="h2" data-split>Tools I build with every day</h2>
-      </div>
-      <div class="stack__grid">
-        <article class="layer" data-tilt>
-          <header class="layer__head"><span class="layer__idx">Layer / Front</span><iconify-icon icon="solar:monitor-smartphone-linear"></iconify-icon></header>
-          <h3>Browser</h3>
-          <ul class="layer__list">
-            <li><iconify-icon icon="logos:html-5"></iconify-icon>HTML5<span>Semantic, accessible markup</span></li>
-            <li><iconify-icon icon="logos:css-3"></iconify-icon>CSS3<span>Layout, motion, responsive</span></li>
-            <li><iconify-icon icon="logos:javascript"></iconify-icon>JavaScript<span>Interactive front ends</span></li>
-            <li><iconify-icon icon="simple-icons:threedotjs"></iconify-icon>Three.js<span>3D, WebGL, shaders</span></li>
-          </ul>
+    <!-- STATEMENT -->
+    <section class="statement" id="about" data-scene="statement">
+      <h2 class="sr-only">About</h2>
+      <p class="statement__text" data-fill>I treat a website as one system. The MySQL schema, the PHP and Python on the server, the JavaScript and Three.js in the browser, the design that makes people stay and the SEO that brings them in. I own every layer, so nothing gets lost between them.</p>
+      <div class="statement__pillars">
+        <article>
+          <iconify-icon icon="solar:code-square-linear" aria-hidden="true"></iconify-icon>
+          <h3>Build</h3>
+          <p>Full-stack web apps, APIs and databases that stay fast as they grow.</p>
         </article>
-        <article class="layer" data-tilt>
-          <header class="layer__head"><span class="layer__idx">Layer / Server</span><iconify-icon icon="solar:server-square-linear"></iconify-icon></header>
-          <h3>Back end</h3>
-          <ul class="layer__list">
-            <li><iconify-icon icon="logos:php"></iconify-icon>PHP<span>Web apps & APIs</span></li>
-            <li><iconify-icon icon="logos:python"></iconify-icon>Python<span>Scripts, automation, APIs</span></li>
-            <li><iconify-icon icon="logos:javascript"></iconify-icon>Node.js<span>Real-time services</span></li>
-          </ul>
+        <article>
+          <iconify-icon icon="solar:pen-new-round-linear" aria-hidden="true"></iconify-icon>
+          <h3>Design</h3>
+          <p>Interfaces, brand identities and graphics with a clear point of view.</p>
         </article>
-        <article class="layer" data-tilt>
-          <header class="layer__head"><span class="layer__idx">Layer / Data</span><iconify-icon icon="solar:database-linear"></iconify-icon></header>
-          <h3>Database</h3>
-          <ul class="layer__list">
-            <li><iconify-icon icon="logos:mysql-icon"></iconify-icon>MySQL<span>Relational data at scale</span></li>
-            <li><iconify-icon icon="solar:database-bold-duotone"></iconify-icon>SQL<span>Schemas, queries, tuning</span></li>
-          </ul>
-        </article>
-        <article class="layer" data-tilt>
-          <header class="layer__head"><span class="layer__idx">Layer / Growth</span><iconify-icon icon="solar:graph-up-linear"></iconify-icon></header>
-          <h3>Design & reach</h3>
-          <ul class="layer__list">
-            <li><iconify-icon icon="solar:pallete-2-linear"></iconify-icon>Web & graphic design<span>UI, brand, visuals</span></li>
-            <li><iconify-icon icon="solar:magnifer-linear"></iconify-icon>SEO<span>Ranking & performance</span></li>
-            <li><iconify-icon icon="solar:megaphone-linear"></iconify-icon>Digital marketing<span>Campaigns & analytics</span></li>
-          </ul>
+        <article>
+          <iconify-icon icon="solar:graph-up-linear" aria-hidden="true"></iconify-icon>
+          <h3>Grow</h3>
+          <p>Technical SEO and digital marketing that turn visits into results.</p>
         </article>
       </div>
     </section>
 
     <!-- WORK -->
-    <section class="work section" id="work" data-shape="4">
-      <div class="section__head">
-        <p class="eyebrow"><span class="eyebrow__num">04</span>Selected work</p>
-        <h2 class="h2" data-split>Projects I'm building</h2>
-      </div>
+    <section class="work" id="work" data-scene="work">
+      <header class="sect-head">
+        <h2 class="h2" data-split>Selected work</h2>
+        <p class="sect-head__note">Live products and what I'm building next.</p>
+      </header>
 
-      <div class="featured">
-        <article class="feat feat--live" data-cursor="Visit">
-          <div class="feat__top"><span class="feat__idx">P—01</span><span class="feat__type">Web app</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
-          <h3 class="feat__title">Qunor</h3>
-          <span class="feat__url">qunor.onrender.com</span>
-          <p class="feat__desc">A free app for learning to read the Quran — all 114 surahs, word-by-word audio from 44 reciters, qaida and tajweed lessons, and translations in 81 languages. Works offline, no account needed.</p>
-          <ul class="feat__stack"><li>JavaScript</li><li>HTML</li><li>CSS</li><li>PWA</li></ul>
-          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://qunor.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/Qunor" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
-        </article>
-        <article class="feat feat--live" data-cursor="Visit">
-          <div class="feat__top"><span class="feat__idx">P—02</span><span class="feat__type">Web tool</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
-          <h3 class="feat__title">ParaLine</h3>
-          <span class="feat__url">paraline.onrender.com</span>
-          <p class="feat__desc">A free, unlimited paraphrasing tool that rewrites English text in six styles while keeping every line separate — with an offline mode and an optional Gemini AI mode.</p>
-          <ul class="feat__stack"><li>JavaScript</li><li>AI</li><li>HTML</li><li>CSS</li></ul>
-          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://paraline.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/paraline" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
-        </article>
-        <article class="feat feat--live" data-cursor="Visit">
-          <div class="feat__top"><span class="feat__idx">P—03</span><span class="feat__type">Web + Android</span><span class="feat__badge"><span class="pulse"></span>Live</span></div>
-          <h3 class="feat__title">Appointments</h3>
-          <span class="feat__url">appointments-reminder.onrender.com</span>
-          <p class="feat__desc">A private appointment tracker with text or voice notes and reminders at any day and time you choose — everything stays on your device.</p>
-          <ul class="feat__stack"><li>JavaScript</li><li>Kotlin</li><li>Jetpack Compose</li></ul>
-          <div class="feat__btns"><a class="feat__btn feat__btn--solid" href="https://appointments-reminder.onrender.com" target="_blank" rel="noopener">Visit live site <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a><a class="feat__btn" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
-        </article>
-        <article class="feat feat--wip" data-repo-hint="islam,learning" data-cursor="Soon">
-          <div class="feat__top"><span class="feat__idx">P—04</span><span class="feat__type">3D web platform</span><span class="feat__badge feat__badge--wip">In progress</span></div>
-          <h3 class="feat__title">A–Z Islamic Learning Platform</h3>
-          
-          <p class="feat__desc">An all-in-one, multilingual and interactive 3D learning platform — Quran reader, Hadith library, daily utilities and Q&amp;A in one place.</p>
-          <ul class="feat__stack"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
-          <div class="feat__btns"><a class="feat__btn feat__link" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
-        </article>
-        <article class="feat feat--wip" data-repo-hint="pingo" data-cursor="Soon">
-          <div class="feat__top"><span class="feat__idx">P—05</span><span class="feat__type">Mobile app</span><span class="feat__badge feat__badge--wip">In progress</span></div>
-          <h3 class="feat__title">Pingo</h3>
-          
-          <p class="feat__desc">Real-time chat, media sharing and voice/video calling — a cross-platform mobile app with a live socket back end.</p>
-          <ul class="feat__stack"><li>React Native</li><li>Node.js</li><li>Socket.io</li><li>Supabase</li><li>Agora</li></ul>
-          <div class="feat__btns"><a class="feat__btn feat__link" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> Code</a></div>
-        </article>
-      </div>
-
-      <div class="repos">
-        <div class="repos__head">
-          <div>
-            <h3 class="repos__title">All repositories</h3>
-            <p class="repos__sub">Pulled live from <a href="https://github.com/Md12Ali" target="_blank" rel="noopener">github.com/Md12Ali</a> — always up to date.</p>
+      <ol class="index">
+        <li class="row" data-live>
+          <div class="row__main">
+            <h3 class="row__title">Qunor</h3>
+            <span class="row__type">Web app</span>
+            <span class="row__state row__state--live">Live</span>
           </div>
-          <div class="repos__filters" role="group" aria-label="Filter by language"></div>
-        </div>
+          <div class="row__detail"><div class="row__inner">
+            <p>A free app for learning to read the Quran: all 114 surahs, word-by-word audio from 44 reciters, qaida and tajweed lessons, and translations in 81 languages. Works offline with no account.</p>
+            <ul class="tags"><li>JavaScript</li><li>PWA</li><li>HTML</li><li>CSS</li></ul>
+            <div class="row__links">
+              <a class="link-btn link-btn--solid" href="https://qunor.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+              <a class="link-btn" href="https://github.com/Md12Ali/Qunor" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+            </div>
+          </div></div>
+        </li>
+        <li class="row" data-live>
+          <div class="row__main">
+            <h3 class="row__title">ParaLine</h3>
+            <span class="row__type">Writing tool</span>
+            <span class="row__state row__state--live">Live</span>
+          </div>
+          <div class="row__detail"><div class="row__inner">
+            <p>A free, unlimited paraphrasing tool that rewrites English text in six styles while keeping every line separate, with an offline mode and an optional Gemini AI mode.</p>
+            <ul class="tags"><li>JavaScript</li><li>AI</li><li>HTML</li><li>CSS</li></ul>
+            <div class="row__links">
+              <a class="link-btn link-btn--solid" href="https://paraline.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+              <a class="link-btn" href="https://github.com/Md12Ali/paraline" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+            </div>
+          </div></div>
+        </li>
+        <li class="row" data-live>
+          <div class="row__main">
+            <h3 class="row__title">Appointments</h3>
+            <span class="row__type">Web + Android</span>
+            <span class="row__state row__state--live">Live</span>
+          </div>
+          <div class="row__detail"><div class="row__inner">
+            <p>A private appointment tracker with text or voice notes and reminders at any day and time you choose. Everything stays on your device.</p>
+            <ul class="tags"><li>JavaScript</li><li>Kotlin</li><li>Jetpack Compose</li></ul>
+            <div class="row__links">
+              <a class="link-btn link-btn--solid" href="https://appointments-reminder.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+              <a class="link-btn" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+            </div>
+          </div></div>
+        </li>
+        <li class="row" data-repo-hint="islam,learning">
+          <div class="row__main">
+            <h3 class="row__title">A to Z Islamic Learning</h3>
+            <span class="row__type">3D platform</span>
+            <span class="row__state">In progress</span>
+          </div>
+          <div class="row__detail"><div class="row__inner">
+            <p>An all-in-one, multilingual and interactive 3D learning platform with a Quran reader, Hadith library, daily utilities and Q&amp;A in one place.</p>
+            <ul class="tags"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
+            <div class="row__links"><a class="link-btn row__repo" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a></div>
+          </div></div>
+        </li>
+        <li class="row" data-repo-hint="pingo">
+          <div class="row__main">
+            <h3 class="row__title">Pingo</h3>
+            <span class="row__type">Mobile app</span>
+            <span class="row__state">In progress</span>
+          </div>
+          <div class="row__detail"><div class="row__inner">
+            <p>Real-time chat, media sharing and voice and video calling in one cross-platform mobile app with a live socket back end.</p>
+            <ul class="tags"><li>React Native</li><li>Node.js</li><li>Socket.io</li><li>Supabase</li><li>Agora</li></ul>
+            <div class="row__links"><a class="link-btn row__repo" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a></div>
+          </div></div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- REPOSITORIES -->
+    <section class="repos" id="repos" data-scene="repos">
+      <div class="repos__panel">
+        <header class="repos__head">
+          <div>
+            <h2 class="h3">Every repository</h2>
+            <p class="repos__sub">Loaded live from <a href="https://github.com/Md12Ali" target="_blank" rel="noopener">github.com/Md12Ali</a> whenever you open this page.</p>
+          </div>
+          <div class="repos__filters" role="group" aria-label="Filter repositories by language"></div>
+        </header>
         <div class="repos__grid" aria-live="polite">
           <div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div>
           <div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div><div class="repo repo--skeleton"></div>
         </div>
-        <a href="https://github.com/Md12Ali" class="btn btn--ghost repos__all" target="_blank" rel="noopener" data-magnetic><iconify-icon icon="mdi:github"></iconify-icon> See everything on GitHub</a>
+        <a href="https://github.com/Md12Ali" class="btn btn--line repos__all" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Open GitHub profile</a>
       </div>
     </section>
 
-    <!-- PROCESS (pinned horizontal) -->
-    <section class="process" id="process" data-shape="5">
-      <div class="process__pin">
-        <div class="process__intro">
-          <p class="eyebrow"><span class="eyebrow__num">05</span>Process</p>
-          <h2 class="h2" data-split>From idea to launch — and beyond</h2>
-          <div class="process__progress" aria-hidden="true"><span></span></div>
+    <!-- SERVICES -->
+    <section class="services" id="services" data-scene="services">
+      <div class="services__layout">
+        <header class="services__head">
+          <h2 class="h2" data-split>What I do</h2>
+          <p class="sect-head__note">Six services, one person accountable for all of them.</p>
+        </header>
+        <div class="acc">
+          <details class="acc__item" open>
+            <summary><span class="acc__title">Full-stack development</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>End-to-end web apps with secure PHP and Python back ends, clean SQL data models and fast JavaScript front ends.</p><ul class="tags"><li>PHP</li><li>Python</li><li>MySQL</li><li>REST APIs</li></ul></div>
+          </details>
+          <details class="acc__item">
+            <summary><span class="acc__title">3D &amp; interactive web</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>Three.js scenes, custom shaders and scroll-driven motion that make a brand hard to forget, while staying fast on phones.</p><ul class="tags"><li>Three.js</li><li>WebGL</li><li>GSAP</li></ul></div>
+          </details>
+          <details class="acc__item">
+            <summary><span class="acc__title">Web design</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>Modern, responsive interfaces, from wireframes to polished screens that are easy to use on every device.</p><ul class="tags"><li>UI/UX</li><li>Responsive</li><li>Prototyping</li></ul></div>
+          </details>
+          <details class="acc__item">
+            <summary><span class="acc__title">Graphic design</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>Logos, brand identities, social media graphics and print that look like they belong to the same brand.</p><ul class="tags"><li>Branding</li><li>Logos</li><li>Social</li></ul></div>
+          </details>
+          <details class="acc__item">
+            <summary><span class="acc__title">SEO</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>Technical and on-page SEO: site speed, structured data, content and keywords that help you rank and stay ranked.</p><ul class="tags"><li>Technical SEO</li><li>Core Web Vitals</li><li>Content</li></ul></div>
+          </details>
+          <details class="acc__item">
+            <summary><span class="acc__title">Digital marketing</span><span class="acc__icon" aria-hidden="true"></span></summary>
+            <div class="acc__body"><p>Campaigns, social strategy and analytics that put your product in front of the right people.</p><ul class="tags"><li>Social</li><li>Campaigns</li><li>Analytics</li></ul></div>
+          </details>
         </div>
-        <ol class="process__track">
-          <li class="step"><span class="step__n">01</span><h3>Discover</h3><p>We define goals, audience and success metrics. I map the content, data and features before a single pixel is drawn.</p></li>
-          <li class="step"><span class="step__n">02</span><h3>Design</h3><p>Wireframes, then a distinct visual identity — typography, colour, motion — prototyped so you can feel it early.</p></li>
-          <li class="step"><span class="step__n">03</span><h3>Build</h3><p>Clean, tested code across the full stack: database, server, and a fast front end with 3D where it earns its place.</p></li>
-          <li class="step"><span class="step__n">04</span><h3>Launch & grow</h3><p>Deployment, SEO, analytics and marketing — so the site keeps working for you long after launch day.</p></li>
-        </ol>
       </div>
+    </section>
+
+    <!-- STACK -->
+    <section class="stack" id="stack" data-scene="stack">
+      <h2 class="h2" data-split>The stack</h2>
+      <div class="stack__groups">
+        <div class="stack__group">
+          <h3>Browser</h3>
+          <ul>
+            <li><iconify-icon icon="logos:html-5" aria-hidden="true"></iconify-icon>HTML5</li>
+            <li><iconify-icon icon="logos:css-3" aria-hidden="true"></iconify-icon>CSS3</li>
+            <li><iconify-icon icon="logos:javascript" aria-hidden="true"></iconify-icon>JavaScript</li>
+            <li><iconify-icon icon="simple-icons:threedotjs" aria-hidden="true"></iconify-icon>Three.js</li>
+          </ul>
+        </div>
+        <div class="stack__group">
+          <h3>Server</h3>
+          <ul>
+            <li><iconify-icon icon="logos:php" aria-hidden="true"></iconify-icon>PHP</li>
+            <li><iconify-icon icon="logos:python" aria-hidden="true"></iconify-icon>Python</li>
+            <li><iconify-icon icon="logos:nodejs-icon" aria-hidden="true"></iconify-icon>Node.js</li>
+          </ul>
+        </div>
+        <div class="stack__group">
+          <h3>Data</h3>
+          <ul>
+            <li><iconify-icon icon="logos:mysql-icon" aria-hidden="true"></iconify-icon>MySQL</li>
+            <li><iconify-icon icon="solar:database-linear" aria-hidden="true"></iconify-icon>SQL</li>
+          </ul>
+        </div>
+        <div class="stack__group">
+          <h3>Reach</h3>
+          <ul>
+            <li><iconify-icon icon="solar:pallete-2-linear" aria-hidden="true"></iconify-icon>Web &amp; graphic design</li>
+            <li><iconify-icon icon="solar:magnifer-linear" aria-hidden="true"></iconify-icon>SEO</li>
+            <li><iconify-icon icon="solar:megaphone-linear" aria-hidden="true"></iconify-icon>Digital marketing</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="process" id="process" data-scene="process">
+      <h2 class="h2" data-split>How a project runs</h2>
+      <ol class="timeline">
+        <span class="timeline__rail" aria-hidden="true"><span class="timeline__fill"></span></span>
+        <li class="step"><h3>Discover</h3><p>We agree on goals, audience and what success looks like. I map the content, data and features before anything is designed.</p></li>
+        <li class="step"><h3>Design</h3><p>Wireframes first, then a distinct visual identity with type, colour and motion, prototyped so you can feel it early.</p></li>
+        <li class="step"><h3>Build</h3><p>Clean, tested code across the full stack: database, server and a fast front end, with 3D only where it earns its place.</p></li>
+        <li class="step"><h3>Launch &amp; grow</h3><p>Deployment, SEO, analytics and marketing, so the site keeps working for you long after launch day.</p></li>
+      </ol>
     </section>
 
     <!-- CONTACT -->
-    <section class="contact section" id="contact" data-shape="6">
-      <p class="eyebrow"><span class="eyebrow__num">06</span>Contact</p>
-      <h2 class="contact__title" data-split>Let's build something remarkable.</h2>
-      <p class="contact__lede">Have a website, app, brand or campaign in mind? Tell me about it — I'll reply with ideas, not just a quote.</p>
-      <div class="contact__ctas">
-        <a class="orb" id="contact-primary" href="mailto:md077ali@gmail.com?subject=Project%20enquiry" data-magnetic data-cursor="Hello">
-          <span class="orb__label">Get in touch</span>
-          <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
-        </a>
-        <ul class="contact__links">
-          <li><a href="mailto:md077ali@gmail.com"><iconify-icon icon="solar:letter-linear"></iconify-icon>Email<span>md077ali@gmail.com</span></a></li>
-          <li><button type="button" class="copy-email" data-email="md077ali@gmail.com"><iconify-icon icon="solar:copy-linear"></iconify-icon><span class="copy-email__label">Copy email</span><span class="copy-email__hint">Click to copy</span></button></li>
-          <li><a href="https://github.com/Md12Ali" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon>GitHub<span>@Md12Ali</span></a></li>
-        </ul>
+    <section class="contact" id="contact" data-scene="contact">
+      <h2 class="contact__title" data-split>Have a project in mind?</h2>
+      <p class="contact__lede">Tell me about the website, app, brand or campaign. I'll reply with ideas, not just a quote.</p>
+      <a class="contact__mail" href="mailto:md077ali@gmail.com?subject=Project%20enquiry" data-magnetic>
+        <span>md077ali@gmail.com</span>
+        <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon>
+      </a>
+      <div class="contact__actions">
+        <button type="button" class="link-btn copy-email" data-email="md077ali@gmail.com"><iconify-icon icon="solar:copy-linear" aria-hidden="true"></iconify-icon><span class="copy-email__label">Copy email</span></button>
+        <a class="link-btn" href="https://github.com/Md12Ali" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> GitHub</a>
       </div>
+      <p class="copy-email__status sr-only" role="status" aria-live="polite"></p>
     </section>
   </main>
 
   <footer class="footer">
-    <p>© <span id="year">2026</span> Mohammed Ali. Designed & built by hand with Three.js.</p>
-    <a href="#top" class="footer__top">Back to top <iconify-icon icon="solar:arrow-up-linear"></iconify-icon></a>
+    <p>&copy; <span id="year">2026</span> Mohammed Ali</p>
+    <p class="footer__made">Built by hand with Three.js and GSAP</p>
+    <a href="#top" class="footer__top">Back to top <iconify-icon icon="solar:arrow-up-linear" aria-hidden="true"></iconify-icon></a>
   </footer>
 
   <script type="module" src="/src/main.js"></script>

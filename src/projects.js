@@ -54,10 +54,10 @@ function repoCard(r) {
   const color = LANG_COLORS[r.lang] || '#8b8a9b';
   const live = LIVE[r.name.toLowerCase()] || (r.home && /^https?:\/\//.test(r.home) ? r.home : '');
   return `
-  <article class="repo" data-lang="${esc(r.lang || 'Other')}" data-cursor="Code">
-    <h4 class="repo__name"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(prettyName(r.name))}</a><iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></h4>
+  <article class="repo" data-lang="${esc(r.lang || 'Other')}">
+    <h4 class="repo__name"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(prettyName(r.name))}</a><iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></h4>
     <p class="repo__desc">${esc(r.desc || (r.fork ? 'Forked repository.' : 'A project by Mohammed Ali.'))}</p>
-    ${live ? `<a class="repo__live" href="${esc(live)}" target="_blank" rel="noopener"><span class="pulse"></span>Live site</a>` : ''}
+    ${live ? `<a class="repo__live" href="${esc(live)}" target="_blank" rel="noopener">Live site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>` : ''}
     <div class="repo__meta">
       ${r.lang ? `<span><i class="repo__dot" style="background:${color}"></i>${esc(r.lang)}</span>` : ''}
       ${r.stars ? `<span><iconify-icon icon="solar:star-linear"></iconify-icon>${r.stars}</span>` : ''}
@@ -76,7 +76,7 @@ export async function initProjects({ onRender } = {}) {
   try {
     repos = await getRepos();
   } catch (e) {
-    grid.innerHTML = `<p class="repos__state">Couldn't reach GitHub just now. <a href="https://github.com/${USER}?tab=repositories" target="_blank" rel="noopener">Browse all repositories on GitHub →</a></p>`;
+    grid.innerHTML = `<p class="repos__state">Couldn't reach GitHub just now. <a href="https://github.com/${USER}?tab=repositories" target="_blank" rel="noopener">Browse all repositories on GitHub</a></p>`;
     return;
   }
 
@@ -85,8 +85,8 @@ export async function initProjects({ onRender } = {}) {
     .sort((a, b) => (a.fork - b.fork) || (!!LIVE[b.name.toLowerCase()] - !!LIVE[a.name.toLowerCase()]) || (new Date(b.pushed) - new Date(a.pushed)));
 
   // link featured cards to their real repos when found
-  document.querySelectorAll('.feat[data-repo-hint]').forEach((card) => {
-    const link = card.querySelector('.feat__link');
+  document.querySelectorAll('.row[data-repo-hint]').forEach((card) => {
+    const link = card.querySelector('.row__repo');
     if (!link || !link.hidden) return;
     const hints = card.dataset.repoHint.split(',');
     const hit = repos.find((r) => hints.some((h) => `${r.name} ${r.desc || ''}`.toLowerCase().includes(h)));
@@ -94,7 +94,7 @@ export async function initProjects({ onRender } = {}) {
   });
 
   if (!repos.length) {
-    grid.innerHTML = `<p class="repos__state">New repositories are on the way. <a href="https://github.com/${USER}" target="_blank" rel="noopener">Follow on GitHub →</a></p>`;
+    grid.innerHTML = `<p class="repos__state">New repositories are on the way. <a href="https://github.com/${USER}" target="_blank" rel="noopener">Follow on GitHub</a></p>`;
     return;
   }
 
@@ -111,7 +111,7 @@ export async function initProjects({ onRender } = {}) {
 
   if (langs.length > 1 && filters) {
     filters.innerHTML = ['All', ...langs].map((l) =>
-      `<button class="chip" type="button" aria-pressed="${l === 'All'}" data-lang="${esc(l)}">${esc(l)}${l === 'All' ? ` · ${repos.length}` : ''}</button>`).join('');
+      `<button class="chip" type="button" aria-pressed="${l === 'All'}" data-lang="${esc(l)}">${esc(l)}${l === 'All' ? ` <span class="chip__n">${repos.length}</span>` : ''}</button>`).join('');
     filters.addEventListener('click', (e) => {
       const b = e.target.closest('.chip');
       if (!b) return;

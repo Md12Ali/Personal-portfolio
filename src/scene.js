@@ -1,367 +1,376 @@
 /**
- * "Mixed universe" background.
- * One renderer, five looks that cross-fade as the page scrolls:
- *   aurora sky · neon liquid · synthwave grid   (full-screen shader, blended by weights)
- *   spiral galaxy · glowing wave field          (3D point clouds, faded by opacity)
- * Each section of the page has its own mix; pointer and scroll speed feed every layer.
+ * The 3D studio behind the page.
+ *
+ * One persistent object: a liquid-chrome sculpture lit by an authored photo
+ * studio (warm softbox, cool strip light, floor bounce) that is baked into a
+ * PMREM environment map, so every reflection on the metal is physically based.
+ * Scrolling morphs the sculpture and moves it through the layout; the pointer
+ * pushes a soft bulge into the surface. Dust motes drift in the light.
  */
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Mesh, Points, Group, BufferGeometry, BufferAttribute,
-  PlaneGeometry, ShaderMaterial, AdditiveBlending, Color, MathUtils, Vector2, LinearSRGBColorSpace,
+  WebGLRenderer, Scene, PerspectiveCamera, Mesh, Points, Group, Color, Vector2, Vector3,
+  IcosahedronGeometry, SphereGeometry, PlaneGeometry, BufferGeometry, BufferAttribute,
+  MeshPhysicalMaterial, MeshBasicMaterial, ShaderMaterial, PMREMGenerator,
+  BackSide, DoubleSide, AdditiveBlending, ACESFilmicToneMapping, SRGBColorSpace, MathUtils,
 } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-/* Per-section mix: [aurora, liquid, synth, galaxy, waves, brightness] */
-const MIX = [
-  [0.55, 0.0, 0.0, 1.0, 0.0, 1.0],   // hero: galaxy over aurora
-  [1.0, 0.0, 0.0, 0.3, 0.0, 0.8],    // about: aurora
-  [0.15, 1.0, 0.0, 0.0, 0.0, 0.7],   // services: neon liquid
-  [0.0, 0.45, 0.0, 0.0, 1.0, 0.75],  // stack: waves + liquid
-  [0.35, 0.0, 0.0, 0.0, 1.0, 0.7],   // work: waves + aurora
-  [0.0, 0.0, 1.0, 0.0, 0.0, 0.8],    // process: synthwave
-  [0.6, 0.0, 0.0, 1.0, 0.0, 1.0],    // contact: galaxy again
-];
-/* Galaxy framing per section: [x, y, z, scale] */
-const GAL_WIDE = [[2.6, 0.2, 0, 0.62], [3.2, 0.6, -2, 0.5], [3.5, 0, -4, 0.4], [3.5, 0, -4, 0.4], [0, 0, -6, 0.4], [0, 0, -6, 0.4], [2.6, 0.2, 0, 0.62]];
-const GAL_NARROW = [[0, 1.35, -1, 0.42], [0, 1.6, -3, 0.38], [0, 1, -5, 0.3], [0, 1, -5, 0.3], [0, 0, -6, 0.3], [0, 0, -6, 0.3], [0, 1.3, -1, 0.45]];
+/* ------------------------------------------------------------------ */
+/* Poses: one per page section. x / y are fractions of the visible     */
+/* half-width / half-height, so the layout adapts to any aspect ratio. */
+/* ------------------------------------------------------------------ */
+const EMBER = [1.0, 0.36, 0.12];
+const POSES = {
+  hero:      { x: 0.52,  y: 0.02,  s: 0.92, amp: 0.13, freq: 0.78, twist: 0.0, rim: 0.3,  glow: EMBER,            gi: 0.5,  spin: 0.0, dim: 1.0 },
+  statement: { x: -0.64, y: 0.02,  s: 0.72, amp: 0.24, freq: 0.62, twist: 0.0, rim: 0.4,  glow: [1.0, 0.5, 0.26], gi: 0.38, spin: 1.1, dim: 0.9 },
+  work:      { x: 0.76,  y: -0.04, s: 0.5,  amp: 0.07, freq: 1.0,  twist: 0.0, rim: 0.22, glow: [0.5, 0.6, 1.0],  gi: 0.3,  spin: 2.3, dim: 0.85 },
+  repos:     { x: 0.0,   y: 0.0,   s: 0.8,  amp: 0.18, freq: 0.85, twist: 0.4, rim: 0.2,  glow: [0.6, 0.62, 0.8], gi: 0.22, spin: 3.0, dim: 0.5 },
+  services:  { x: -0.64, y: -0.14, s: 0.62, amp: 0.12, freq: 0.9,  twist: 1.2, rim: 0.32, glow: [1.0, 0.45, 0.2], gi: 0.4,  spin: 3.9, dim: 0.9 },
+  stack:     { x: 0.74,  y: 0.02,  s: 0.52, amp: 0.16, freq: 1.0,  twist: 0.0, rim: 0.3,  glow: [0.75, 0.7, 1.0], gi: 0.32, spin: 4.6, dim: 0.9 },
+  process:   { x: -0.64, y: -0.04, s: 0.6,  amp: 0.1,  freq: 1.1,  twist: 0.6, rim: 0.28, glow: [0.55, 0.65, 1.0], gi: 0.3, spin: 5.4, dim: 0.9 },
+  contact:   { x: 0.0,   y: -0.74, s: 1.35, amp: 0.2,  freq: 0.7,  twist: 0.0, rim: 0.6,  glow: EMBER,            gi: 0.7,  spin: 6.3, dim: 0.85 },
+};
+const KEYS = ['x', 'y', 's', 'amp', 'freq', 'twist', 'rim', 'gi', 'spin', 'dim'];
 
-const NOISE = /* glsl */`
-float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
-  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), f.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), f.x), f.y); }
-float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < OCTAVES; i++){ v += a*noise(p); p = p*2.02 + vec2(1.7, 9.2); a *= 0.5; } return v; }
-`;
+/* Ashima simplex noise (MIT) */
+const NOISE = /* glsl */ `
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+10.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+  i=mod289(i);
+  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+  p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+  vec4 m=max(0.5-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+  return 105.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}`;
 
-const BG_FRAG = /* glsl */`
-uniform float uTime; uniform vec2 uRes; uniform vec2 uMouse;
-uniform float uA; uniform float uL; uniform float uS; uniform float uBright; uniform float uSpeed;
-${NOISE}
-
-vec3 aurora(vec2 p, vec2 uv, float t){
-  vec3 col = vec3(0.0);
-  for (int i = 0; i < 3; i++) {
-    float fi = float(i);
-    float x = p.x * (1.1 + fi*0.2) + fi*1.3 + uMouse.x*0.15;
-    float n = fbm(vec2(x*1.2, t*0.07 + fi*4.0));
-    float base = 0.02 + fi*0.13 + (n-0.5)*0.55 + uMouse.y*0.04;
-    float d = p.y - base;
-    float band = smoothstep(-0.025, 0.0, d) * exp(-max(d, 0.0) * (3.2 + fi));
-    float rays = 0.45 + 0.55*fbm(vec2(x*14.0 + t*0.15, fi*7.0 + t*0.05));
-    vec3 c = i == 0 ? vec3(0.15, 1.0, 0.65) : (i == 1 ? vec3(0.45, 0.35, 1.0) : vec3(0.95, 0.3, 0.85));
-    col += c * band * rays * (0.5 - fi*0.1);
-  }
-  col += vec3(0.1, 0.05, 0.25) * exp(-abs(p.y + 0.45) * 5.0) * 0.35;
-  return col;
+/* Build the photo studio that the chrome reflects. */
+function buildStudioEnvironment(renderer) {
+  const env = new Scene();
+  const room = new Mesh(new SphereGeometry(20, 32, 16), new MeshBasicMaterial({ color: 0x030304, side: BackSide }));
+  env.add(room);
+  const panel = (w, h, rgb, power, pos) => {
+    const m = new Mesh(new PlaneGeometry(w, h), new MeshBasicMaterial({ color: new Color(rgb[0] * power, rgb[1] * power, rgb[2] * power), side: DoubleSide }));
+    m.position.set(...pos);
+    m.lookAt(0, 0, 0); // face the centre
+    env.add(m);
+    return m;
+  };
+  panel(7, 4.2, [1.0, 0.62, 0.38], 7.0, [-6, 4.5, 3.5]);   // warm key softbox
+  panel(0.9, 9, [0.78, 0.86, 1.0], 6.0, [7, 0.5, -1.5]);   // cool strip, right rim
+  panel(0.6, 7, [0.78, 0.86, 1.0], 3.5, [-7.5, -0.5, -3]); // cool strip, left rim
+  panel(10, 10, [1.0, 1.0, 1.0], 0.9, [0, 9, 0]);           // overhead fill
+  panel(14, 14, [1.0, 0.38, 0.14], 0.45, [0, -8, 0]);       // ember floor bounce
+  panel(3, 0.35, [1.0, 0.4, 0.15], 9.0, [2.5, -1.5, 7]);    // thin ember kicker in front
+  const pmrem = new PMREMGenerator(renderer);
+  const rt = pmrem.fromScene(env, 0.035);
+  pmrem.dispose();
+  env.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+  return rt;
 }
 
-vec3 liquid(vec2 p, float t){
-  p = p * 1.6 + uMouse * 0.25;
-  t *= 0.6;
-  vec2 q = vec2(fbm(p + vec2(0.0, t*0.10)), fbm(p + vec2(5.2, 1.3) - t*0.08));
-  vec2 r = vec2(fbm(p + 4.0*q + vec2(1.7, 9.2) + t*0.15), fbm(p + 4.0*q + vec2(8.3, 2.8) - t*0.12));
-  float f = fbm(p + 4.0*r);
-  vec3 col = mix(vec3(0.02, 0.01, 0.06), vec3(0.42, 0.12, 0.95), clamp(f*f*2.2, 0.0, 1.0));
-  col = mix(col, vec3(0.0, 0.85, 0.95), clamp(length(q) - 0.55, 0.0, 1.0) * 0.8);
-  col = mix(col, vec3(0.85, 1.0, 0.25), clamp(pow(r.x, 5.0) * 2.5, 0.0, 1.0) * 0.55);
-  col = mix(col, vec3(1.0, 0.3, 0.75), clamp(pow(r.y, 6.0) * 3.0, 0.0, 1.0) * 0.45);
-  return col * (f*f*1.9 + 0.05);
-}
-
-vec3 synth(vec2 p, float t){
-  p.x += uMouse.x * 0.06;
-  float h = -0.08;
-  vec3 col;
-  if (p.y > h) {
-    col = mix(vec3(0.22, 0.02, 0.28), vec3(0.0), smoothstep(h, 0.55, p.y));
-    vec2 c = vec2(0.0, 0.16);
-    float r = length(p - c);
-    vec3 sun = mix(vec3(1.0, 0.25, 0.65), vec3(1.0, 0.85, 0.3), smoothstep(-0.12, 0.3, p.y - c.y + 0.1));
-    float stripes = p.y < c.y ? 1.0 - step(fract((c.y - p.y) * 18.0 - t*0.35), (c.y - p.y) * 2.4) : 1.0;
-    col = mix(col, sun, smoothstep(0.30, 0.295, r) * stripes);
-    col += vec3(1.0, 0.25, 0.6) * exp(-max(r - 0.28, 0.0) * 9.0) * 0.35;
-    float m = h + 0.05 + 0.16*noise(vec2(p.x*3.2 + 10.0, 0.0)) + 0.05*noise(vec2(p.x*11.0, 1.0));
-    m *= smoothstep(0.0, 0.5, abs(p.x)) * 0.9 + 0.1;
-    if (p.y < m) {
-      col = vec3(0.04, 0.0, 0.08);
-      col += vec3(0.7, 0.2, 1.0) * smoothstep(0.012, 0.0, m - p.y) * 0.9;
-    }
-  } else {
-    float z = 0.35 / (h - p.y + 0.001);
-    float x = p.x * z;
-    float gx = abs(fract(x * 1.2) - 0.5);
-    float gz = abs(fract(z * 0.6 - t * 1.2 * uSpeed) - 0.5);
-    float w = 0.035 + z*0.004;
-    float line = max(smoothstep(0.5 - w, 0.5, gx), smoothstep(0.5 - w*1.4, 0.5, gz));
-    vec3 neon = mix(vec3(0.0, 0.9, 1.0), vec3(1.0, 0.2, 0.8), smoothstep(-0.6, 0.6, p.x));
-    col = vec3(0.02, 0.0, 0.05) + neon * line * exp(-z * 0.06) * 1.2;
-    col += vec3(0.6, 0.1, 0.6) * exp(-(h - p.y) * 18.0) * 0.6;
-  }
-  return col;
-}
-
-void main(){
-  vec2 uv = gl_FragCoord.xy / uRes;
-  vec2 p = (gl_FragCoord.xy - 0.5*uRes) / uRes.y;
-  float t = uTime;
-  vec3 col = mix(vec3(0.025, 0.018, 0.06), vec3(0.008, 0.006, 0.02), uv.y);
-  float s = hash(floor(gl_FragCoord.xy / 2.5));
-  col += step(0.9968, s) * (0.5 + 0.5*sin(t*1.5 + s*80.0)) * vec3(0.85, 0.85, 1.0) * (1.0 - uS);
-  if (uA > 0.002) col += aurora(p, uv, t) * uA;
-  if (uL > 0.002) col = mix(col, liquid(p, t), uL);
-  if (uS > 0.002) col = mix(col, synth(p, t), uS);
-  col *= uBright;
-  col *= 1.0 - 0.45*length(uv - 0.5);
-  gl_FragColor = vec4(col, 1.0);
-}
-`;
-
-export function createWorld(canvas, { mobile }) {
-  let renderer;
-  try {
-    renderer = new WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-  } catch (e) {
-    return null;
-  }
-  const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.6);
-  renderer.setPixelRatio(dpr);
-  renderer.setClearColor(0x050409, 1);
-  renderer.outputColorSpace = LinearSRGBColorSpace; // shader colours are authored in display space
+export function createWorld(canvas, { mobile = false } = {}) {
+  const renderer = new WebGLRenderer({ canvas, antialias: !mobile, alpha: false, powerPreference: 'high-performance' });
+  const maxDpr = mobile ? 1.5 : 1.75;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+  renderer.toneMapping = ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = SRGBColorSpace;
+  renderer.setClearColor(0x0a0a0b, 1);
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(55, 1, 0.1, 100);
-  camera.position.set(0, 0, 8);
+  const camera = new PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0, 8.2);
 
-  /* ---- full-screen background ---- */
-  const bgU = {
-    uTime: { value: 0 }, uRes: { value: new Vector2() }, uMouse: { value: new Vector2() },
-    uA: { value: 0 }, uL: { value: 0 }, uS: { value: 0 }, uBright: { value: 1 }, uSpeed: { value: 1 },
+  const envRT = buildStudioEnvironment(renderer);
+  scene.environment = envRT.texture;
+
+  /* ---------- cyclorama backdrop ---------- */
+  const backdropUniforms = {
+    uGlow: { value: new Color(...EMBER) },
+    uGlowI: { value: POSES.hero.gi },
+    uGlowDir: { value: new Vector3(0.35, -0.25, -1).normalize() },
   };
-  const bgMat = new ShaderMaterial({
-    vertexShader: 'void main(){ gl_Position = vec4(position.xy, 0.9999, 1.0); }',
-    fragmentShader: BG_FRAG, uniforms: bgU, defines: { OCTAVES: mobile ? 4 : 6 },
-    depthWrite: false, depthTest: false,
-  });
-  const bg = new Mesh(new PlaneGeometry(2, 2), bgMat);
-  bg.frustumCulled = false;
-  bg.renderOrder = -10;
-  scene.add(bg);
+  const backdrop = new Mesh(
+    new SphereGeometry(40, 48, 24),
+    new ShaderMaterial({
+      side: BackSide, depthWrite: false, uniforms: backdropUniforms,
+      vertexShader: /* glsl */ `
+        varying vec3 vDir;
+        void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+      fragmentShader: /* glsl */ `
+        uniform vec3 uGlow; uniform float uGlowI; uniform vec3 uGlowDir; varying vec3 vDir;
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
+        void main(){
+          vec3 d = normalize(vDir);
+          vec3 base = mix(vec3(0.0045,0.0045,0.005), vec3(0.0012,0.0012,0.0014), smoothstep(-0.3, 0.7, d.y));
+          float g = pow(max(dot(d, uGlowDir), 0.0), 9.0);
+          vec3 col = base + uGlow * g * uGlowI * 0.07;
+          col += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
+          gl_FragColor = vec4(col, 1.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`,
+    }),
+  );
+  scene.add(backdrop);
 
-  /* ---- galaxy ---- */
-  const galaxy = new Group();
-  scene.add(galaxy);
-  const gCount = mobile ? 26000 : 60000;
-  const gPos = new Float32Array(gCount * 3), gCol = new Float32Array(gCount * 3), gSize = new Float32Array(gCount);
-  const cIn = new Color('#ffd9a8'), cMid = new Color('#b388ff'), cOut = new Color('#36d6ff'), cLime = new Color('#d4ff3a'), tmp = new Color();
-  for (let i = 0; i < gCount; i++) {
-    const r = Math.pow(Math.random(), 1.6) * 6;
-    const branch = (i % 4) / 4 * Math.PI * 2;
-    const spin = r * 0.9;
-    const rnd = () => Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * (0.15 + r * 0.12);
-    gPos[i * 3] = Math.cos(branch + spin) * r + rnd();
-    gPos[i * 3 + 1] = rnd() * 0.6;
-    gPos[i * 3 + 2] = Math.sin(branch + spin) * r + rnd();
-    const k = r / 6;
-    tmp.copy(cIn).lerp(k < 0.5 ? cMid : cOut, k < 0.5 ? k * 2 : (k - 0.5) * 2);
-    if (Math.random() < 0.04) tmp.copy(cLime);
-    gCol[i * 3] = tmp.r; gCol[i * 3 + 1] = tmp.g; gCol[i * 3 + 2] = tmp.b;
-    gSize[i] = Math.random();
+  /* ---------- the sculpture ---------- */
+  const uniforms = {
+    uTime: { value: 0 },
+    uAmp: { value: POSES.hero.amp },
+    uFreq: { value: POSES.hero.freq },
+    uTwist: { value: 0 },
+    uPointer: { value: new Vector3(0, 0, 2) },
+    uBulge: { value: 0 },
+    uRim: { value: POSES.hero.rim },
+    uRimColor: { value: new Color(...EMBER) },
+  };
+  const material = new MeshPhysicalMaterial({
+    color: 0xd4d1cc, metalness: 1, roughness: 0.16,
+    clearcoat: 1, clearcoatRoughness: 0.06,
+    envMapIntensity: 1.1, iridescence: 0.12, iridescenceIOR: 1.6,
+  });
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>
+        uniform float uTime; uniform float uAmp; uniform float uFreq; uniform float uTwist;
+        uniform vec3 uPointer; uniform float uBulge;
+        ${NOISE}
+        vec3 sculpt(vec3 p){
+          vec3 n = normalize(p);
+          float a = uTwist * p.y;
+          float c = cos(a), s = sin(a);
+          vec3 q = vec3(c*p.x - s*p.z, p.y, s*p.x + c*p.z);
+          vec3 qn = vec3(c*n.x - s*n.z, n.y, s*n.x + c*n.z);
+          float t = uTime;
+          float f = snoise(q * uFreq + vec3(0.0, t*0.16, t*0.08));
+          f += 0.16 * snoise(q * uFreq * 1.9 - vec3(t*0.12));
+          float b = uBulge * smoothstep(1.1, 0.0, distance(n, normalize(uPointer)));
+          return q + qn * (f * uAmp + b);
+        }`)
+      .replace('#include <beginnormal_vertex>', `
+        vec3 sp = position;
+        vec3 sn = normalize(position);
+        vec3 tg = normalize(cross(sn, abs(sn.y) < 0.99 ? vec3(0.0,1.0,0.0) : vec3(1.0,0.0,0.0)));
+        vec3 bt = normalize(cross(sn, tg));
+        float eps = 0.012;
+        vec3 sd0 = sculpt(sp);
+        vec3 sd1 = sculpt(sp + tg * eps);
+        vec3 sd2 = sculpt(sp + bt * eps);
+        vec3 objectNormal = normalize(cross(sd1 - sd0, sd2 - sd0));
+        #ifdef USE_TANGENT
+          vec3 objectTangent = vec3(tangent.xyz);
+        #endif`)
+      .replace('#include <begin_vertex>', 'vec3 transformed = sd0;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform float uRim; uniform vec3 uRimColor;`)
+      .replace('#include <opaque_fragment>', `
+        float fres = pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0);
+        outgoingLight += uRimColor * fres * uRim;
+        #include <opaque_fragment>`);
+  };
+  const detail = mobile ? 30 : 64;
+  const sculpture = new Mesh(new IcosahedronGeometry(1.2, detail), material);
+  const rig = new Group();
+  rig.add(sculpture);
+  scene.add(rig);
+
+  /* ---------- dust in the light ---------- */
+  const COUNT = mobile ? 650 : 1800;
+  const pos = new Float32Array(COUNT * 3);
+  const seed = new Float32Array(COUNT);
+  for (let i = 0; i < COUNT; i++) {
+    pos[i * 3] = MathUtils.randFloatSpread(14);
+    pos[i * 3 + 1] = MathUtils.randFloatSpread(8);
+    pos[i * 3 + 2] = MathUtils.randFloat(-5, 4);
+    seed[i] = Math.random();
   }
-  const gGeo = new BufferGeometry();
-  gGeo.setAttribute('position', new BufferAttribute(gPos, 3));
-  gGeo.setAttribute('aColor', new BufferAttribute(gCol, 3));
-  gGeo.setAttribute('aSize', new BufferAttribute(gSize, 1));
-  const gMat = new ShaderMaterial({
-    transparent: true, depthWrite: false, blending: AdditiveBlending,
-    uniforms: { uTime: { value: 0 }, uPR: { value: dpr }, uOpacity: { value: 1 }, uIntro: { value: 0 } },
-    vertexShader: /* glsl */`
-      uniform float uTime; uniform float uPR; uniform float uIntro;
-      attribute float aSize; attribute vec3 aColor; varying vec3 vC;
+  const dustGeo = new BufferGeometry();
+  dustGeo.setAttribute('position', new BufferAttribute(pos, 3));
+  dustGeo.setAttribute('aSeed', new BufferAttribute(seed, 1));
+  const dustUniforms = { uTime: { value: 0 }, uPx: { value: renderer.getPixelRatio() }, uColor: { value: new Color(1.0, 0.72, 0.5) } };
+  const dust = new Points(dustGeo, new ShaderMaterial({
+    uniforms: dustUniforms, transparent: true, depthWrite: false, blending: AdditiveBlending,
+    vertexShader: /* glsl */ `
+      uniform float uTime; uniform float uPx; attribute float aSeed; varying float vA;
       void main(){
         vec3 p = position;
-        float r = length(p.xz);
-        float a = atan(p.z, p.x) + uTime * (0.6 / (r + 0.6)) * 0.35 - (1.0 - uIntro) * 3.0 / (r + 0.5);
-        p.xz = vec2(cos(a), sin(a)) * r * (0.3 + 0.7 * uIntro);
+        p.y = mod(position.y + 4.0 + uTime * (0.04 + aSeed * 0.06), 8.0) - 4.0;
+        p.x += sin(uTime * 0.2 + aSeed * 40.0) * 0.25;
+        p.z += cos(uTime * 0.15 + aSeed * 23.0) * 0.2;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = (2.0 + aSize * 6.0) * uPR * (3.0 / -mv.z);
-        vC = aColor;
+        float near = smoothstep(0.0, 1.0, 1.0 - abs(-mv.z - 7.5) / 6.0);
+        vA = (0.15 + 0.85 * fract(aSeed * 7.31)) * near * (0.55 + 0.45 * sin(uTime * (0.6 + aSeed) + aSeed * 30.0));
+        gl_PointSize = uPx * (1.2 + aSeed * 2.4) * (8.0 / -mv.z);
       }`,
-    fragmentShader: /* glsl */`
-      uniform float uOpacity; varying vec3 vC;
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor; varying float vA;
       void main(){
         float d = length(gl_PointCoord - 0.5);
-        float a = pow(1.0 - smoothstep(0.0, 0.5, d), 2.0) * uOpacity;
-        gl_FragColor = vec4(vC * a, a);
+        float a = smoothstep(0.5, 0.0, d);
+        gl_FragColor = vec4(uColor * a * vA * 0.55, 1.0);
       }`,
-  });
-  const gPoints = new Points(gGeo, gMat);
-  gPoints.frustumCulled = false;
-  galaxy.add(gPoints);
-  // bright core
-  const coreMat = new ShaderMaterial({
-    transparent: true, depthWrite: false, blending: AdditiveBlending, uniforms: { uOpacity: { value: 1 } },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform float uOpacity; varying vec2 vUv;
-      void main(){ float d = length(vUv - 0.5) * 2.0; float a = pow(max(0.0, 1.0 - d), 3.0);
-        vec3 c = mix(vec3(0.6, 0.4, 1.0), vec3(1.0, 0.88, 0.7), pow(max(0.0, 1.0 - d), 6.0));
-        gl_FragColor = vec4(c * a * uOpacity, a * uOpacity); }`,
-  });
-  const core = new Mesh(new PlaneGeometry(5, 5), coreMat);
-  core.frustumCulled = false;
-  scene.add(core);
+  }));
+  scene.add(dust);
 
-  /* ---- wave field ---- */
-  const nx = mobile ? 120 : 200, nz = mobile ? 80 : 130;
-  const wPos = new Float32Array(nx * nz * 3);
-  let k = 0;
-  for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
-    wPos[k++] = (i / (nx - 1) - 0.5) * 44; wPos[k++] = 0; wPos[k++] = -(j / (nz - 1)) * 44 + 7;
-  }
-  const wGeo = new BufferGeometry();
-  wGeo.setAttribute('position', new BufferAttribute(wPos, 3));
-  const wMat = new ShaderMaterial({
-    transparent: true, depthWrite: false, blending: AdditiveBlending,
-    uniforms: { uTime: { value: 0 }, uPR: { value: dpr }, uMouse: { value: new Vector2() }, uOpacity: { value: 0 } },
-    vertexShader: /* glsl */`
-      uniform float uTime; uniform float uPR; uniform vec2 uMouse; varying float vH; varying float vD;
-      void main(){
-        vec3 p = position;
-        float t = uTime;
-        float h = sin(p.x*0.35 + t*0.9) * 0.6 + sin(p.z*0.28 + t*0.7) * 0.7 + sin((p.x + p.z)*0.18 - t*0.5) * 0.9;
-        h += sin(length(p.xz - vec2(uMouse.x*10.0, -8.0 + uMouse.y*6.0)) * 0.9 - t*2.5) * 0.35;
-        p.y = h - 3.2;
-        vH = h;
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        vD = -mv.z;
-        gl_Position = projectionMatrix * mv;
-        gl_PointSize = uPR * (2.2 + (h + 2.0) * 0.8) * (14.0 / -mv.z);
-      }`,
-    fragmentShader: /* glsl */`
-      uniform float uOpacity; varying float vH; varying float vD;
-      void main(){
-        float d = length(gl_PointCoord - 0.5);
-        float a = 1.0 - smoothstep(0.1, 0.5, d);
-        vec3 c = mix(vec3(0.2, 0.3, 1.0), vec3(0.1, 0.95, 1.0), smoothstep(-1.5, 0.5, vH));
-        c = mix(c, vec3(0.85, 1.0, 0.3), smoothstep(1.0, 2.0, vH));
-        float fade = exp(-vD * 0.06) * uOpacity;
-        gl_FragColor = vec4(c * a * fade, a * fade);
-      }`,
-  });
-  const waves = new Points(wGeo, wMat);
-  waves.frustumCulled = false;
-  scene.add(waves);
-
-  /* ---- post ---- */
+  /* ---------- post ---------- */
   let composer = null;
+  let bloom = null;
   if (!mobile) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.65, 0.6, 0.55));
+    bloom = new UnrealBloomPass(new Vector2(1, 1), 0.22, 0.5, 0.9);
+    composer.addPass(bloom);
     composer.addPass(new OutputPass());
   }
 
-  /* ---- state ---- */
-  let width = 0, height = 0, narrow = false;
-  let morphTarget = 0, morph = 0;
-  const pointer = { tx: 0, ty: 0, x: 0, y: 0 };
-  let velocity = 0, speed = 1;
-  let raf = 0, running = false, last = performance.now(), time = 0;
-  const introState = { value: 0 };
-  const mix = new Array(6).fill(0), gal = new Array(4).fill(0);
+  /* ---------- state ---------- */
+  const order = Object.keys(POSES);
+  const cur = { ...POSES.hero };
+  const tgt = { ...POSES.hero };
+  const glowCur = new Color(...EMBER);
+  const glowTgt = new Color(...EMBER);
+  const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: 0 };
+  let velocity = 0;
+  let halfW = 1;
+  let halfH = 1;
+  let narrow = false;
+  let raf = 0;
+  let running = false;
+  let last = performance.now();
+  let elapsed = 0;
 
   function resize() {
-    width = window.innerWidth; height = window.innerHeight;
-    narrow = width < 860;
-    renderer.setSize(width, height, false);
-    if (composer) composer.setSize(width, height);
-    camera.aspect = width / height;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    composer && composer.setSize(w, h);
+    bloom && bloom.setSize(w, h);
+    camera.aspect = w / h;
+    narrow = camera.aspect < 0.8;
+    camera.fov = narrow ? 40 : 30;
     camera.updateProjectionMatrix();
-    bgU.uRes.value.set(width * dpr, height * dpr);
+    halfH = Math.tan(MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+    halfW = halfH * camera.aspect;
   }
 
-  function lerpRows(rows, m, out) {
-    const i = Math.min(Math.floor(m), rows.length - 1), j = Math.min(i + 1, rows.length - 1);
-    const f = MathUtils.smootherstep(m - i, 0, 1);
-    for (let c = 0; c < out.length; c++) out[c] = rows[i][c] + (rows[j][c] - rows[i][c]) * f;
-    return out;
+  function setSection(name, progress = 0) {
+    const i = order.indexOf(name);
+    if (i < 0) return;
+    const a = POSES[order[i]];
+    const b = POSES[order[Math.min(i + 1, order.length - 1)]];
+    const k = MathUtils.smoothstep(progress, 0.6, 1.0);
+    for (const key of KEYS) tgt[key] = MathUtils.lerp(a[key], b[key], k);
+    glowTgt.setRGB(...a.glow).lerp(new Color(...b.glow), k);
   }
 
-  function tick(now) {
-    raf = requestAnimationFrame(tick);
-    const dt = Math.min((now - last) / 1000, 0.05);
-    last = now; time += dt;
+  function setPointer(nx, ny) { pointer.tx = nx; pointer.ty = ny; pointer.active = 1; }
+  function setVelocity(v) { velocity = MathUtils.clamp(v, -3, 3); }
 
-    morph += (morphTarget - morph) * Math.min(1, dt * 2.4);
-    pointer.x += (pointer.tx - pointer.x) * Math.min(1, dt * 3);
-    pointer.y += (pointer.ty - pointer.y) * Math.min(1, dt * 3);
+  const tmp = new Vector3();
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min((now - last) / 1000, 1 / 20);
+    last = now;
+    elapsed += dt * (1 + Math.abs(velocity) * 0.6);
     velocity *= 0.9;
-    speed += (1 + Math.min(Math.abs(velocity), 3) * 1.5 - speed) * Math.min(1, dt * 3);
 
-    lerpRows(MIX, morph, mix);
-    lerpRows(narrow ? GAL_NARROW : GAL_WIDE, morph, gal);
-    const intro = introState.value;
-    const ease = 1 - Math.pow(1 - intro, 3);
+    const ease = 1 - Math.exp(-dt * 2.6);
+    for (const key of KEYS) cur[key] += (tgt[key] - cur[key]) * ease;
+    glowCur.lerp(glowTgt, ease);
+    pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 5));
+    pointer.y += (pointer.ty - pointer.y) * (1 - Math.exp(-dt * 5));
 
-    bgU.uTime.value = time;
-    bgU.uMouse.value.set(pointer.x, pointer.y);
-    bgU.uA.value = mix[0];
-    bgU.uL.value = mix[1];
-    bgU.uS.value = mix[2];
-    bgU.uBright.value = mix[5] * (0.25 + 0.75 * ease);
-    bgU.uSpeed.value = speed;
+    // layout: narrow screens keep the sculpture centred and higher up
+    const px = narrow ? 0 : cur.x * halfW;
+    const py = narrow ? cur.y * halfH + halfH * 0.36 : cur.y * halfH;
+    const scale = cur.s * (narrow ? 0.78 : 1) * Math.min(1, halfW / 2.2 + 0.25);
+    rig.position.set(px, py + Math.sin(elapsed * 0.6) * 0.06, 0);
+    rig.scale.setScalar(scale);
+    sculpture.rotation.y = elapsed * 0.12 + cur.spin + pointer.x * 0.35;
+    sculpture.rotation.x = Math.sin(elapsed * 0.17) * 0.18 - pointer.y * 0.25;
 
-    galaxy.visible = mix[3] > 0.01;
-    galaxy.position.set(gal[0], gal[1], gal[2]);
-    galaxy.scale.setScalar(gal[3]);
-    galaxy.rotation.set(1.05 + pointer.y * 0.25, 0, 0.35 + pointer.x * 0.2);
-    gMat.uniforms.uTime.value = time * speed;
-    gMat.uniforms.uOpacity.value = mix[3] * ease;
-    gMat.uniforms.uIntro.value = ease;
-    coreMat.uniforms.uOpacity.value = mix[3] * ease * 0.8;
-    core.visible = galaxy.visible;
-    core.position.copy(galaxy.position);
-    core.scale.setScalar(gal[3] * 0.9);
+    uniforms.uTime.value = elapsed;
+    uniforms.uAmp.value = cur.amp + Math.min(Math.abs(velocity) * 0.04, 0.12);
+    uniforms.uFreq.value = cur.freq;
+    uniforms.uTwist.value = cur.twist;
+    uniforms.uRim.value = cur.rim;
+    uniforms.uRimColor.value.copy(glowCur);
+    uniforms.uBulge.value += ((pointer.active ? 0.16 : 0) - uniforms.uBulge.value) * ease;
+    // pointer direction in the sculpture's local space
+    tmp.set(pointer.x * 1.4, pointer.y * 1.0, 1.0).normalize();
+    tmp.applyQuaternion(sculpture.quaternion.clone().invert());
+    uniforms.uPointer.value.copy(tmp);
 
-    waves.visible = mix[4] > 0.01;
-    wMat.uniforms.uTime.value = time * (0.6 + speed * 0.4);
-    wMat.uniforms.uMouse.value.set(pointer.x, pointer.y);
-    wMat.uniforms.uOpacity.value = mix[4];
+    material.envMapIntensity = 1.1 * cur.dim;
+    material.envMapRotation.y = cur.spin * 0.35 + pointer.x * 0.25;
+    backdropUniforms.uGlow.value.copy(glowCur);
+    backdropUniforms.uGlowI.value = cur.gi;
+    backdropUniforms.uGlowDir.value.set(px * 0.12 + 0.05, py * 0.12 - 0.2, -1).normalize();
+    dustUniforms.uTime.value = elapsed;
 
-    camera.position.x = pointer.x * 0.3;
-    camera.position.y = pointer.y * 0.2;
-    camera.lookAt(0, -mix[4] * 0.9, -6);
+    camera.position.x = pointer.x * 0.18;
+    camera.position.y = pointer.y * 0.12;
+    camera.lookAt(0, 0, 0);
 
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
-  function start() { if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(tick); }
-  function stop() { running = false; cancelAnimationFrame(raf); }
-  const onVis = () => (document.hidden ? stop() : start());
-  let lostHandler = null;
-  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); stop(); lostHandler && lostHandler(); });
+  function start() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+  function stop() {
+    running = false;
+    cancelAnimationFrame(raf);
+  }
 
+  const onVisibility = () => (document.hidden ? stop() : start());
+  document.addEventListener('visibilitychange', onVisibility);
+  const onResize = () => resize();
+  window.addEventListener('resize', onResize);
   resize();
-  window.addEventListener('resize', resize);
-  document.addEventListener('visibilitychange', onVis);
 
-  return {
-    start,
-    setMorph(v) { morphTarget = MathUtils.clamp(v, 0, 6); },
-    setVelocity(v) { velocity = v; },
-    setPointer(x, y) { pointer.tx = x; pointer.ty = y; },
-    clearPointer() { pointer.tx = 0; pointer.ty = 0; },
-    intro: introState,
-    onContextLost(fn) { lostHandler = fn; },
-    dispose() {
-      stop();
-      window.removeEventListener('resize', resize);
-      document.removeEventListener('visibilitychange', onVis);
-      [bg, gPoints, core, waves].forEach((o) => { o.geometry.dispose(); o.material.dispose(); });
-      if (composer) composer.dispose();
-      renderer.dispose();
-    },
-  };
+  // compile shaders up front so the first visible frame is not a hitch
+  renderer.compile(scene, camera);
+
+  function renderOnce() { frame(performance.now()); cancelAnimationFrame(raf); }
+
+  function dispose() {
+    stop();
+    document.removeEventListener('visibilitychange', onVisibility);
+    window.removeEventListener('resize', onResize);
+    scene.traverse((o) => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) o.material.dispose();
+    });
+    envRT.dispose();
+    composer && composer.dispose();
+    renderer.dispose();
+  }
+
+  return { start, stop, setSection, setPointer, setVelocity, resize, renderOnce, dispose, renderer };
 }
