@@ -8,7 +8,7 @@ The personal portfolio of **Mohammed Ali**, a full-stack web developer who also 
 
 ## Highlights
 
-- **A natural 3D landscape.** The whole page sits inside one mountain valley at dusk, built entirely in code with Three.js (no image files): a waterfall pouring into a lake, a river winding up through pine forest, layered mountain ranges with snowy peaks, drifting clouds, mist at the waterfall and fireflies over the water. Distant hills fade into the evening haze the way real mountains do.
+- **A natural 3D landscape.** The whole page sits inside one mountain valley at dusk, built in code with Three.js: a waterfall pouring into a mirror-still lake that truly reflects the peaks, trees and sunset, a river winding up through pine forest, layered mountain ranges with snowy peaks, drifting clouds, low mist over the water, a flock of birds, fireflies, and pines that sway in the wind. Slopes have fine rocky relief and layered strata. Distant hills fade into the evening haze the way real mountains do.
 - **Scroll-driven camera.** Scrolling flies the camera up the valley. Each section has its own view, framed on the side opposite the text, and the camera eases smoothly between them. Moving the pointer adds gentle depth.
 - **Readable on every screen.** The near landscape stays dark and the warm light lives on the horizon, so text keeps strong contrast; phones get a lighter scene (fewer trees, less detail, no glow pass) so scrolling stays smooth.
 - **Live GitHub projects.** Every public repository is pulled from the GitHub API in the visitor's browser, so new repos show up without a rebuild. Filter them by language; deployed repos get a **Live site** link.
