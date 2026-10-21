@@ -1,5 +1,5 @@
 /**
- * Dusk Valley: one persistent natural 3D world behind the page.
+ * Alpine Day: one persistent natural 3D world behind the page.
  *
  * World bible
  *  - Place: a mountain valley at blue hour. A lake in the foreground is fed by a
@@ -31,19 +31,19 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /* ---------------------------------------------------------------- palette */
 const P = {
-  zenith: new Color('#08142e'),
-  sky: new Color('#1d3263'),
-  horizonCool: new Color('#4e4c78'),
-  horizonWarm: new Color('#d9834f'),
-  sun: new Color('#ffb46e'),
-  forest: new Color('#1a3224'),
-  meadow: new Color('#2c4529'),
-  rock: new Color('#454756'),
-  snow: new Color('#dfe6f2'),
-  water: new Color('#07111f'),
+  zenith: new Color('#2a78d6'),
+  sky: new Color('#6aaeee'),
+  horizonCool: new Color('#c9e2f7'),
+  horizonWarm: new Color('#eef5fb'),
+  sun: new Color('#fff7ea'),
+  forest: new Color('#1f4a2e'),
+  meadow: new Color('#4f8a3c'),
+  rock: new Color('#7f8898'),
+  snow: new Color('#f5f8fc'),
+  water: new Color('#0c5266'),
   firefly: new Color('#ffd877'),
 };
-const SUN_DIR = new Vector3(-0.22, 0.06, -1).normalize();
+const SUN_DIR = new Vector3(-0.3, 0.42, -1).normalize();
 
 /* ---------------------------------------------------------------- terrain math (CPU) */
 function hash(x, y) {
@@ -129,9 +129,9 @@ const AERIAL = /* glsl */ `
   vec3 aerial(vec3 col, vec3 wpos, float maxA){
     vec3 v = wpos - cameraPosition;
     float dist = length(v);
-    float a = 1.0 - exp(-pow(dist * 0.0021, 1.3));
+    float a = 1.0 - exp(-pow(dist * 0.00115, 1.25));
     vec3 fd = normalize(v * vec3(1.0, 0.25, 1.0));
-    vec3 fc = mix(skyColor(fd), mix(uHorCool, uSky, 0.4), 0.45) * 0.85;
+    vec3 fc = mix(skyColor(fd), mix(uHorCool, uSky, 0.35), 0.5);
     return mix(col, fc, clamp(a, 0.0, maxA));
   }
 `;
@@ -201,7 +201,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
   const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.3 : 1.75);
   renderer.setPixelRatio(dpr);
   renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = 0.95;
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.setClearColor(P.zenith, 1);
 
@@ -214,7 +214,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
     uZenith: { value: P.zenith }, uSky: { value: P.sky }, uHorCool: { value: P.horizonCool },
     uHorWarm: { value: P.horizonWarm }, uSun: { value: P.sun }, uSunDir: { value: SUN_DIR },
   };
-  scene.fog = new Fog(new Color('#2e3150'), 110, 480);
+  scene.fog = new Fog(new Color('#c6dcf1'), 150, 700);
 
   /* ---- sky with drifting cloud bands and a few early stars ---- */
   const sky = new Mesh(track(new SphereGeometry(1100, 48, 24)), track(new ShaderMaterial({
@@ -229,15 +229,15 @@ export function createWorld(canvas, { mobile = false } = {}) {
         if (d.y > 0.0) {
           // cloud bands near the horizon, lit warm on the sun side
           vec2 cp = d.xz / (d.y + 0.08) * 1.6 + vec2(uTime * 0.012, 0.0);
-          float c = smoothstep(0.52, 0.8, fbm2(cp * 1.3));
+          float c = smoothstep(0.48, 0.78, fbm2(cp * 1.3));
           c *= smoothstep(0.0, 0.06, d.y) * (1.0 - smoothstep(0.25, 0.55, d.y));
           float lit = pow(max(dot(normalize(vec3(d.x, 0.0, d.z) + 1e-5), normalize(vec3(uSunDir.x, 0.0, uSunDir.z))), 0.0), 2.0);
-          vec3 cc = mix(uHorCool * 0.75, uHorWarm * 1.05, lit);
-          col = mix(col, cc, c * 0.7);
+          vec3 cc = mix(vec3(0.78, 0.84, 0.92), vec3(1.05), 0.55 + 0.45 * lit);
+          col = mix(col, cc, c * 0.85);
           // stars fade in toward the zenith
           vec2 sp = floor(d.xz / (d.y + 0.2) * 260.0);
           float st = step(0.9975, h21(sp)) * smoothstep(0.35, 0.8, d.y);
-          col += vec3(0.9, 0.92, 1.0) * st * (0.5 + 0.5 * sin(uTime * 2.0 + h21(sp) * 60.0));
+          col += vec3(0.0) * st;
         }
         gl_FragColor = vec4(col, 1.0);
         ${OUT}
@@ -270,31 +270,33 @@ export function createWorld(canvas, { mobile = false } = {}) {
       void main(){
         vec3 n = normalize(vN);
         // fine relief: perturb the normal with a small noise gradient so slopes are not flat
-        vec2 q = vW.xz * 0.22;
+        // slope-aware coordinates: on steep faces fold height into the pattern so it does not streak
+        vec2 q = (vW.xz + vec2(vW.y * 0.8, vW.y * 0.55)) * 0.22;
         #if DETAIL
         float b0 = n2(q) * 0.55 + n2(q * 2.7) * 0.3 + n2(q * 6.1) * 0.15;
         float bx = n2(q + vec2(0.08, 0.0)) * 0.55 + n2((q + vec2(0.08, 0.0)) * 2.7) * 0.3 + n2((q + vec2(0.08, 0.0)) * 6.1) * 0.15;
         float bz = n2(q + vec2(0.0, 0.08)) * 0.55 + n2((q + vec2(0.0, 0.08)) * 2.7) * 0.3 + n2((q + vec2(0.0, 0.08)) * 6.1) * 0.15;
-        n = normalize(n + vec3(-(bx - b0), 0.0, -(bz - b0)) * 9.0);
+        float near = smoothstep(15.0, 90.0, length(vW - cameraPosition));
+        n = normalize(n + vec3(-(bx - b0), 0.0, -(bz - b0)) * mix(3.5, 7.0, near));
         #else
         float b0 = n2(q) * 0.6 + n2(q * 2.7) * 0.4;
         #endif
         float slope = 1.0 - n.y;
         float h = vW.y;
-        float var = fbm2(vW.xz * 0.05);
+        float var = fbm2((vW.xz + vec2(vW.y * 0.8, vW.y * 0.55)) * 0.05);
         vec3 col = mix(uForest, uMeadow, smoothstep(0.35, 0.75, var) * 0.6);
-        col = mix(col, uRock, smoothstep(0.32, 0.55, slope + var * 0.15));
-        col = mix(col, uRock, smoothstep(55.0, 85.0, h + var * 18.0));
+        col = mix(col, uRock, smoothstep(0.46, 0.72, slope + var * 0.15));
+        col = mix(col, uRock, smoothstep(70.0, 100.0, h + var * 18.0));
         float snow = smoothstep(95.0, 125.0, h + var * 30.0) * (1.0 - smoothstep(0.45, 0.75, slope));
         // rock strata and darker crevices
         float rocky = smoothstep(0.3, 0.6, slope) + smoothstep(55.0, 85.0, h);
-        col *= mix(1.0, 0.82 + 0.18 * sin(h * 1.9 + var * 7.0 + b0 * 3.0), clamp(rocky, 0.0, 1.0));
+        col *= mix(1.0, 0.92 + 0.08 * sin(h * 1.2 + var * 7.0 + b0 * 3.0), clamp(rocky, 0.0, 1.0));
         col *= 0.72 + 0.4 * b0;
         col = mix(col, uSnow, snow);
         // light: warm sun from behind the peaks, cool sky fill
-        float diff = max(dot(n, normalize(uSunDir + vec3(0.0, 0.25, 0.0))), 0.0);
+        float diff = max(dot(n, normalize(uSunDir)), 0.0);
         float rim = pow(max(dot(n, normalize(vec3(uSunDir.x, 0.0, uSunDir.z))), 0.0), 2.0) * smoothstep(40.0, 140.0, h);
-        vec3 lit = col * (uSky * 0.75 + uHorCool * 0.35 * n.y) + col * uSun * diff * 0.4 + uHorWarm * rim * (0.08 + snow * 0.75);
+        vec3 lit = col * (uSky * 0.42 * (0.55 + 0.45 * n.y)) + col * uSun * diff * 1.15 + uSun * rim * snow * 0.15;
         gl_FragColor = vec4(aerial(lit, vW, 0.97), 1.0);
         ${OUT}
       }`,
@@ -378,8 +380,8 @@ export function createWorld(canvas, { mobile = false } = {}) {
   normals.wrapS = normals.wrapT = RepeatWrapping;
   const lake = new Water(track(new PlaneGeometry(220, 160)), {
     textureWidth: mobile ? 320 : 900, textureHeight: mobile ? 320 : 900,
-    waterNormals: normals, sunDirection: SUN_DIR.clone(), sunColor: 0xffb878,
-    waterColor: 0x020a12, distortionScale: 0.7, fog: false,
+    waterNormals: normals, sunDirection: SUN_DIR.clone(), sunColor: 0xffffff,
+    waterColor: 0x0b5a6e, distortionScale: 0.9, fog: false,
   });
   lake.material.uniforms.size.value = 2.4;
   lake.rotation.x = -Math.PI / 2; lake.position.set(0, LOW_WATER, CLIFF_Z + 80);
@@ -407,8 +409,8 @@ export function createWorld(canvas, { mobile = false } = {}) {
   scene.add(mistSheet);
   // upper river: a mirror on desktop, a light shader on phones
   const river = mobile ? new Mesh(track(new PlaneGeometry(200, 330)), waterMat) : new Water(track(new PlaneGeometry(200, 330)), {
-    textureWidth: 640, textureHeight: 640, waterNormals: normals, sunDirection: SUN_DIR.clone(), sunColor: 0xffb878,
-    waterColor: 0x020a12, distortionScale: 1.4, fog: false,
+    textureWidth: 640, textureHeight: 640, waterNormals: normals, sunDirection: SUN_DIR.clone(), sunColor: 0xffffff,
+    waterColor: 0x0b5a6e, distortionScale: 1.4, fog: false,
   });
   if (!mobile) { river.material.uniforms.size.value = 2.0; track(river.material); }
   river.rotation.x = -Math.PI / 2; river.position.set(0, HIGH_WATER, CLIFF_Z - 3 - 165);
@@ -485,8 +487,8 @@ export function createWorld(canvas, { mobile = false } = {}) {
   scene.add(mist);
 
   /* ---- pine forest ---- */
-  const hemi = new HemisphereLight(new Color('#4a5f96'), new Color('#121a10'), 1.25);
-  const sun = new DirectionalLight(new Color('#ffb070'), 1.3);
+  const hemi = new HemisphereLight(new Color('#a6cdf2'), new Color('#33452a'), 1.5);
+  const sun = new DirectionalLight(new Color('#fff4e2'), 2.4);
   sun.position.copy(SUN_DIR).multiplyScalar(100).add(new Vector3(0, 60, 0));
   scene.add(hemi, sun);
   // three crossed cards per tree, painted with the pine texture
@@ -644,10 +646,9 @@ export function createWorld(canvas, { mobile = false } = {}) {
       fragmentShader: `${SKY_FN}${AERIAL}
         varying float vY; varying vec3 vW;
         void main(){
-          vec3 base = vec3(0.012, 0.022, 0.014);
-          vec3 tip = vec3(0.06, 0.08, 0.035);
+          vec3 base = vec3(0.025, 0.06, 0.022);
+          vec3 tip = vec3(0.16, 0.26, 0.07);
           vec3 col = mix(base, tip, vY);
-          col += uHorWarm * pow(vY, 3.0) * 0.05;
           gl_FragColor = vec4(aerial(col, vW, 0.9), 1.0);
           ${OUT}
         }`,
@@ -740,7 +741,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
         gl_FragColor = vec4(uColor * a * 1.6, a); }`,
   })));
   fireflies.frustumCulled = false;
-  scene.add(fireflies);
+  // daylight scene: fireflies stay off
 
   /* ---- post (desktop): gentle bloom on the sky glow, water glint and fireflies ---- */
   let composer = null;
@@ -762,7 +763,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
           for (int i = 0; i < 40; i++) {
             uv -= delta;
             vec3 s = texture2D(tDiffuse, uv).rgb;
-            float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.42, 0.0);
+            float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 1.4, 0.0);
             acc += s * l * decay;
             decay *= 0.955;
           }
@@ -770,7 +771,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
         }`,
     });
     composer.addPass(raysPass);
-    composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.35, 0.6, 0.78));
+    composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.18, 0.5, 1.15));
     composer.addPass(new OutputPass());
   }
 
@@ -826,7 +827,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
 
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min((now - last) / 1000, 1 / 30);
+    const dt = MathUtils.clamp((now - last) / 1000, 0, 1 / 30); // RAF time can precede start(): never step backwards
     last = now;
     time += dt;
     uTime.value = time;
@@ -877,7 +878,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
       const facing = sunScreen.z < 1 ? 1 : 0;
       const off = Math.max(Math.abs(sunScreen.x), Math.abs(sunScreen.y));
       raysPass.uniforms.uSun.value.set(sunScreen.x * 0.5 + 0.5, sunScreen.y * 0.5 + 0.5);
-      raysPass.uniforms.uStrength.value = facing * (1 - MathUtils.smoothstep(off, 1.0, 2.2)) * 0.9;
+      raysPass.uniforms.uStrength.value = facing * (1 - MathUtils.smoothstep(off, 1.0, 2.2)) * 0.5;
     }
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
@@ -895,6 +896,7 @@ export function createWorld(canvas, { mobile = false } = {}) {
 
   function renderOnce() { frame(performance.now()); cancelAnimationFrame(raf); }
   function snap() { first = true; intro = 1; }
+  function debug() { return { bank, pos: camera.position.toArray(), look: cur.look.toArray(), q: camera.quaternion.toArray(), section, sectionProgress }; }
   function dispose() {
     stop();
     document.removeEventListener('visibilitychange', onVis);
@@ -905,5 +907,5 @@ export function createWorld(canvas, { mobile = false } = {}) {
     renderer.dispose();
   }
 
-  return { start, stop, setSection, setPointer, setVelocity, resize, renderOnce, dispose, snap, renderer };
+  return { start, stop, setSection, setPointer, setVelocity, resize, renderOnce, dispose, snap, debug, renderer };
 }
