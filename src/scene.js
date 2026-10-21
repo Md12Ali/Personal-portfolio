@@ -19,8 +19,9 @@ import {
   BufferAttribute, PlaneGeometry, SphereGeometry, ConeGeometry, ShaderMaterial, MeshLambertMaterial,
   HemisphereLight, DirectionalLight, Object3D, Color, Vector2, Vector3, Fog, MathUtils,
   BackSide, DoubleSide, AdditiveBlending, ACESFilmicToneMapping, SRGBColorSpace,
-  TextureLoader, RepeatWrapping, InstancedBufferAttribute,
+  TextureLoader, RepeatWrapping, InstancedBufferAttribute, InstancedBufferGeometry, CanvasTexture,
 } from 'three';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { Water } from 'three/addons/objects/Water.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -150,6 +151,48 @@ function makeChapters() {
     process:   { pos: [riverX(-200) + 4, 34, -200], look: [riverX(-320), 40, -340],   fov: 46, sx: -0.45, sy: -0.05, mpos: [riverX(-196), 36, -196],  mfov: 60, msy: 0.3 },
     contact:   { pos: [0, 92, 20],                  look: [-10, 30, -360],            fov: 44, sx: 0.0,   sy: 0.12,  mpos: [0, 100, 30],              mfov: 58, msy: 0.1 },
   };
+}
+
+/* ---------------------------------------------------------------- pine texture */
+/* A pine painted once into a canvas: a trunk and drooping whorls of needle clusters,
+   darker inside, lighter at the tips. Used on crossed alpha-tested cards. */
+function makePineTexture() {
+  const W = 256, H = 512;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  g.fillStyle = '#2b1e15';
+  g.fillRect(W / 2 - 4, 60, 8, H - 60);
+  const whorls = 30;
+  for (let i = 0; i < whorls; i++) {
+    const p = i / (whorls - 1);
+    const y = 18 + p * (H - 70);
+    const half = (6 + p * 112) * (0.85 + rnd() * 0.3);
+    // dense dark core so the tree reads as solid
+    g.fillStyle = `hsl(${138 + rnd() * 8}, 32%, ${9 + rnd() * 4}%)`;
+    g.beginPath();
+    g.moveTo(W / 2 - half * 0.7, y + half * 0.28);
+    g.quadraticCurveTo(W / 2, y - 6, W / 2 + half * 0.7, y + half * 0.28);
+    g.lineTo(W / 2, y + half * 0.42);
+    g.closePath(); g.fill();
+    const clusters = 26 + Math.floor(p * 70);
+    for (let k = 0; k < clusters; k++) {
+      const side = rnd() < 0.5 ? -1 : 1;
+      const t = Math.pow(rnd(), 0.8);
+      const x = W / 2 + side * t * half;
+      const yy = y + t * t * half * 0.38 + (rnd() - 0.5) * 8;
+      const light = 12 + t * 16 + (1 - p) * 6 + rnd() * 8;
+      g.fillStyle = `hsl(${128 + rnd() * 18}, ${30 + rnd() * 15}%, ${light}%)`;
+      g.beginPath();
+      g.ellipse(x, yy, 3 + rnd() * 4, 2 + rnd() * 2.5, side * (0.35 + t * 0.4), 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  const tex = new CanvasTexture(c);
+  tex.colorSpace = SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
 }
 
 /* ---------------------------------------------------------------- world */
@@ -446,13 +489,21 @@ export function createWorld(canvas, { mobile = false } = {}) {
   const sun = new DirectionalLight(new Color('#ffb070'), 1.3);
   sun.position.copy(SUN_DIR).multiplyScalar(100).add(new Vector3(0, 60, 0));
   scene.add(hemi, sun);
-  const tiers = [[1.0, 0.42, 0.04], [0.82, 0.4, 0.26], [0.62, 0.36, 0.48], [0.4, 0.32, 0.68]].map(([r, h, y]) => {
-    const g = new ConeGeometry(r, h, 7, 1); g.translate(0, y + h / 2, 0); return g;
+  // three crossed cards per tree, painted with the pine texture
+  const cards = [0, Math.PI / 3, (2 * Math.PI) / 3].map((r) => {
+    const g = new PlaneGeometry(1, 1); g.translate(0, 0.5, 0); g.rotateY(r); return g;
   });
-  const trunk = new ConeGeometry(0.12, 0.2, 5, 1); trunk.translate(0, 0.0, 0);
-  const treeGeo = track(mergeGeometries([trunk, ...tiers]));
-  tiers.forEach((g) => g.dispose()); trunk.dispose();
-  const treeMat = track(new MeshLambertMaterial({ color: 0xffffff }));
+  const treeGeo = track(mergeGeometries(cards));
+  cards.forEach((g) => g.dispose());
+  { // soften card lighting: normals lean upward so every card catches the sky light
+    const nrm = treeGeo.attributes.normal;
+    for (let i = 0; i < nrm.count; i++) {
+      const v = new Vector3(nrm.getX(i) * 0.35, 0.94, nrm.getZ(i) * 0.35).normalize();
+      nrm.setXYZ(i, v.x, v.y, v.z);
+    }
+  }
+  const pineTex = track(makePineTexture());
+  const treeMat = track(new MeshLambertMaterial({ map: pineTex, alphaTest: 0.5, side: DoubleSide, color: 0xffffff }));
   treeMat.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = uTime;
     shader.vertexShader = shader.vertexShader
@@ -483,11 +534,11 @@ export function createWorld(canvas, { mobile = false } = {}) {
     if (keepClear.some(([cx, cz]) => (x - cx) ** 2 + (z - cz) ** 2 < 220)) continue; // never in front of the lens
     const s = 0.8 + Math.random() * 0.9;
     dummy.position.set(x, h - 0.3, z);
-    dummy.scale.set(1.6 * s, (5.5 + Math.random() * 3.5) * s, 1.6 * s);
+    dummy.scale.set(3.6 * s, (6.5 + Math.random() * 3.5) * s, 3.6 * s);
     dummy.rotation.y = Math.random() * Math.PI;
     dummy.updateMatrix();
     trees.setMatrixAt(placed, dummy.matrix);
-    tint.setHSL(0.36 + Math.random() * 0.07, 0.32, 0.11 + Math.random() * 0.08);
+    tint.setHSL(0.3 + Math.random() * 0.08, 0.25, 0.62 + Math.random() * 0.3);
     trees.setColorAt(placed, tint);
     placed++;
   }
@@ -545,6 +596,117 @@ export function createWorld(canvas, { mobile = false } = {}) {
   birds.frustumCulled = false;
   scene.add(birds);
 
+  /* ---- meadow grass on the lake shore, moving in the breeze ---- */
+  {
+    const bladeN = mobile ? 9000 : 28000;
+    const blade = new PlaneGeometry(0.075, 1, 1, 3); blade.translate(0, 0.5, 0);
+    const gGeo = track(new InstancedBufferGeometry());
+    gGeo.index = blade.index;
+    gGeo.setAttribute('position', blade.attributes.position);
+    gGeo.setAttribute('uv', blade.attributes.uv);
+    const gPos = new Float32Array(bladeN * 3), gRnd = new Float32Array(bladeN * 2);
+    let n = 0;
+    for (let tries = 0; tries < bladeN * 8 && n < bladeN; tries++) {
+      const z = -52 + Math.random() * 128;
+      const x = riverX(z) + (Math.random() - 0.5) * 120;
+      const h = heightAt(x, z);
+      if (h < LOW_WATER + 0.25 || h > 10) continue;
+      if (Math.abs(heightAt(x + 1, z) - h) + Math.abs(heightAt(x, z + 1) - h) > 1.1) continue;
+      if (fbm(x * 0.08, z * 0.08, 2) < 0.32) continue; // patches
+      gPos.set([x, h - 0.05, z], n * 3);
+      gRnd.set([Math.random(), Math.random()], n * 2);
+      n++;
+    }
+    gGeo.setAttribute('aPos', new InstancedBufferAttribute(gPos, 3));
+    gGeo.setAttribute('aRnd', new InstancedBufferAttribute(gRnd, 2));
+    gGeo.instanceCount = n;
+    const grass = new Mesh(gGeo, track(new ShaderMaterial({
+      side: DoubleSide,
+      uniforms: { uTime, ...skyU },
+      vertexShader: /* glsl */ `
+        uniform float uTime; attribute vec3 aPos; attribute vec2 aRnd; varying float vY; varying vec3 vW;
+        void main(){
+          vec3 p = position;
+          float h = 0.28 + aRnd.y * 0.55;
+          p.x *= 1.0 - position.y * 0.85;
+          p.y *= h;
+          float r = aRnd.x * 6.2832;
+          p.xz = mat2(cos(r), -sin(r), sin(r), cos(r)) * p.xz;
+          float w = sin(uTime * 1.7 + aPos.x * 0.35 + aPos.z * 0.22) * 0.5 + 0.5;
+          w += sin(uTime * 3.1 + aPos.x * 1.3) * 0.15;
+          float bend = position.y * position.y * h;
+          p.x += (w * 0.32 + 0.08) * bend;
+          p.z += w * 0.12 * bend;
+          vec3 wp = aPos + p;
+          vY = position.y; vW = wp;
+          gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
+        }`,
+      fragmentShader: `${SKY_FN}${AERIAL}
+        varying float vY; varying vec3 vW;
+        void main(){
+          vec3 base = vec3(0.012, 0.022, 0.014);
+          vec3 tip = vec3(0.06, 0.08, 0.035);
+          vec3 col = mix(base, tip, vY);
+          col += uHorWarm * pow(vY, 3.0) * 0.05;
+          gl_FragColor = vec4(aerial(col, vW, 0.9), 1.0);
+          ${OUT}
+        }`,
+    })));
+    grass.frustumCulled = false;
+    scene.add(grass);
+    blade.dispose();
+  }
+
+  /* ---- white water where the fall hits the lake ---- */
+  const foam = new Mesh(track(new PlaneGeometry(26, 16)), track(new ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uTime },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `${NOISE_GLSL}
+      uniform float uTime; varying vec2 vUv;
+      void main(){
+        vec2 c = (vUv - vec2(0.5, 0.82)) * vec2(1.0, 1.6);
+        float d = length(c);
+        float n = fbm2(vec2(atan(c.y, c.x) * 3.0, d * 9.0 - uTime * 1.6));
+        float a = smoothstep(0.55, 0.0, d) * smoothstep(0.35, 0.75, n + 0.25 * (1.0 - d));
+        gl_FragColor = vec4(vec3(0.82, 0.86, 0.92), a * 0.85);
+        ${OUT}
+      }`,
+  })));
+  foam.rotation.x = -Math.PI / 2;
+  foam.position.set(wfX, LOW_WATER + 0.06, CLIFF_Z + 7.5);
+  scene.add(foam);
+  const sprayN = mobile ? 60 : 160;
+  const sPos = new Float32Array(sprayN * 3), sSeed = new Float32Array(sprayN);
+  for (let i = 0; i < sprayN; i++) { sPos.set([wfX + (Math.random() - 0.5) * 11, LOW_WATER, CLIFF_Z + 1.5], i * 3); sSeed[i] = Math.random(); }
+  const sprayGeo = track(new BufferGeometry());
+  sprayGeo.setAttribute('position', new BufferAttribute(sPos, 3));
+  sprayGeo.setAttribute('aSeed', new BufferAttribute(sSeed, 1));
+  const spray = new Points(sprayGeo, track(new ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uTime, uPR: { value: dpr } },
+    vertexShader: /* glsl */ `
+      uniform float uTime; uniform float uPR; attribute float aSeed; varying float vA;
+      void main(){
+        float life = fract(uTime * (0.5 + aSeed * 0.4) + aSeed * 7.0);
+        vec3 p = position;
+        float ang = aSeed * 6.2832;
+        p.x += cos(ang) * life * 3.0;
+        p.z += abs(sin(ang)) * life * 4.0;
+        p.y += life * (3.5 + aSeed * 2.5) - life * life * 4.5;
+        vA = (1.0 - life) * 0.75;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = uPR * (6.0 + aSeed * 8.0) * (20.0 / max(-mv.z, 1.0));
+      }`,
+    fragmentShader: /* glsl */ `
+      varying float vA;
+      void main(){ float d = length(gl_PointCoord - 0.5); float a = (1.0 - smoothstep(0.1, 0.5, d)) * vA;
+        gl_FragColor = vec4(vec3(0.9, 0.93, 0.98), a); }`,
+  })));
+  spray.frustumCulled = false;
+  scene.add(spray);
+
   /* ---- fireflies over the lake shore ---- */
   const ffN = mobile ? 90 : 200;
   const fPos = new Float32Array(ffN * 3), fSeed = new Float32Array(ffN);
@@ -582,9 +744,32 @@ export function createWorld(canvas, { mobile = false } = {}) {
 
   /* ---- post (desktop): gentle bloom on the sky glow, water glint and fireflies ---- */
   let composer = null;
+  let raysPass = null;
   if (!mobile) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
+    // light shafts: march from each pixel toward the sun and gather the bright sky behind the peaks
+    raysPass = new ShaderPass({
+      uniforms: { tDiffuse: { value: null }, uSun: { value: new Vector2(0.5, 0.5) }, uStrength: { value: 0 } },
+      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: /* glsl */ `
+        uniform sampler2D tDiffuse; uniform vec2 uSun; uniform float uStrength; varying vec2 vUv;
+        void main(){
+          vec4 base = texture2D(tDiffuse, vUv);
+          if (uStrength <= 0.001) { gl_FragColor = base; return; }
+          vec2 delta = (vUv - uSun) * (0.92 / 40.0);
+          vec2 uv = vUv; float decay = 1.0; vec3 acc = vec3(0.0);
+          for (int i = 0; i < 40; i++) {
+            uv -= delta;
+            vec3 s = texture2D(tDiffuse, uv).rgb;
+            float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.42, 0.0);
+            acc += s * l * decay;
+            decay *= 0.955;
+          }
+          gl_FragColor = vec4(base.rgb + acc * (uStrength / 40.0) * vec3(1.0, 0.82, 0.62), base.a);
+        }`,
+    });
+    composer.addPass(raysPass);
     composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.35, 0.6, 0.78));
     composer.addPass(new OutputPass());
   }
@@ -601,7 +786,8 @@ export function createWorld(canvas, { mobile = false } = {}) {
   let velocity = 0;
   let raf = 0, running = false, last = performance.now(), time = 0, intro = 0, first = true;
   let section = 'hero', sectionProgress = 0;
-  const tmp = new Vector3();
+  const tmp = new Vector3(), prevCam = new Vector3(), lateral = new Vector3(), right = new Vector3(), sunScreen = new Vector3();
+  let bank = 0;
 
   function view(name, out) {
     const c = CHAPTERS[name];
@@ -672,13 +858,27 @@ export function createWorld(canvas, { mobile = false } = {}) {
     tmp.y += Math.sin(time * 0.17) * 0.2;
     const ground = Math.max(heightAt(tmp.x, tmp.z), tmp.z > CLIFF_Z - 3 ? LOW_WATER : HIGH_WATER);
     if (tmp.y < ground + 6) tmp.y = ground + 6;
+    // drone-like bank into lateral moves
+    lateral.copy(tmp).sub(prevCam);
+    prevCam.copy(tmp);
+    right.set(1, 0, 0).applyQuaternion(camera.quaternion);
+    const bankTarget = MathUtils.clamp(-lateral.dot(right) * 0.05, -0.07, 0.07);
+    bank += (bankTarget - bank) * (1 - Math.exp(-dt * 3));
     camera.position.copy(tmp);
     sky.position.copy(tmp);
     camera.lookAt(cur.look);
+    camera.rotateZ(bank);
     camera.fov = cur.fov;
     camera.setViewOffset(width, height, -cur.sx * width / 2, cur.sy * height / 2, width, height);
     camera.updateProjectionMatrix();
 
+    if (raysPass) {
+      sunScreen.copy(SUN_DIR).multiplyScalar(900).add(camera.position).project(camera);
+      const facing = sunScreen.z < 1 ? 1 : 0;
+      const off = Math.max(Math.abs(sunScreen.x), Math.abs(sunScreen.y));
+      raysPass.uniforms.uSun.value.set(sunScreen.x * 0.5 + 0.5, sunScreen.y * 0.5 + 0.5);
+      raysPass.uniforms.uStrength.value = facing * (1 - MathUtils.smoothstep(off, 1.0, 2.2)) * 0.9;
+    }
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
