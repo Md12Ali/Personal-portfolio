@@ -426,67 +426,175 @@ section { position: relative; padding: clamp(6rem, 14vh, 10rem) var(--pad); max-
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 
-/* ==========================================================
-   Dusk Valley: keep copy readable over the landscape
-   ========================================================== */
-.contact { position: relative; isolation: isolate; }
-.contact::before {
-  content: ''; position: absolute; z-index: -1; left: 50%; top: clamp(4rem, 12vh, 9rem);
-  width: min(1100px, 96vw); height: min(560px, 70vh); transform: translateX(-50%);
-  background: radial-gradient(closest-side, rgba(240, 247, 253, 0.78), rgba(240, 247, 253, 0.45) 55%, rgba(240, 247, 253, 0) 100%);
-  pointer-events: none;
+/* ==========================================================================
+   Alpine Day layout system
+   One container (1280px), one panel style, one radius (22px panels, pills for
+   controls). Each chapter is a single glass panel on the half of the screen
+   the camera leaves free; the 3D landmark fills the other half.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+  --max: 1320px;
+  --r-panel: 22px;
+  --panel-bg: rgba(248, 252, 255, 0.7);
+  --panel-line: rgba(255, 255, 255, 0.78);
+  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 24px 60px -18px rgba(18, 58, 104, 0.28);
+  --panel-pad: clamp(1.4rem, 3vw, 2.75rem);
+  --col: min(100%, 39rem);
 }
-.hero, .statement, .work, .services, .stack, .process, .contact { text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35); }
-
-/* ==========================================================
-   Alpine Day: daylight readability
-   The page text is dark; a soft daylight haze sits behind the copy column
-   so it reads cleanly over forest and rock.
-   ========================================================== */
-:root { color-scheme: light; }
 .grain { opacity: 0.04; mix-blend-mode: multiply; }
 .stage::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(236, 245, 253, 0.12) 0%, rgba(236, 245, 253, 0) 18%, rgba(236, 245, 253, 0) 75%, rgba(236, 245, 253, 0.35) 100%);
+  background: linear-gradient(180deg, rgba(236, 245, 253, 0.1) 0%, rgba(236, 245, 253, 0) 18%, rgba(236, 245, 253, 0) 78%, rgba(236, 245, 253, 0.35) 100%);
 }
 
-/* Frosted daylight glass behind every block of copy: the landscape stays
-   visible, softly blurred, and dark text keeps full contrast. */
-.glass, .hero__inner, .hero__facts, .statement__text, .statement__pillars, .work .index,
-.services__head, .acc, .stack__groups, .timeline {
-  background: rgba(250, 253, 255, 0.62);
-  -webkit-backdrop-filter: blur(16px) saturate(1.35);
-  backdrop-filter: blur(16px) saturate(1.35);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 18px 50px rgba(22, 64, 112, 0.12);
-  border-radius: 22px;
+section {
+  max-width: var(--max); margin: 0 auto;
+  padding: clamp(5rem, 12vh, 8rem) var(--pad);
+  min-height: 100dvh; display: grid; align-content: center;
 }
-.hero__inner { padding: clamp(1.4rem, 3vw, 2.6rem) clamp(1.4rem, 3.2vw, 2.8rem); width: fit-content; max-width: min(60rem, 100%); }
-.hero__facts { padding: 1rem 1.4rem; }
-.statement__text { padding: clamp(1.2rem, 2.6vw, 2rem); }
-.statement__pillars { padding: clamp(1.2rem, 2.4vw, 1.8rem); }
-.work .index { padding: 0.4rem clamp(1rem, 2.4vw, 1.8rem); border-bottom: 1px solid rgba(255, 255, 255, 0.7); }
-.services__head { padding: clamp(1.2rem, 2.4vw, 1.8rem); }
-.acc { padding: 0.3rem clamp(1rem, 2.4vw, 1.8rem); border-bottom: 1px solid rgba(255, 255, 255, 0.7); }
-.stack__groups { padding: clamp(1.2rem, 2.6vw, 2rem); }
-.timeline { padding: clamp(1.2rem, 2.6vw, 2rem) clamp(1.2rem, 2.6vw, 2rem) clamp(1.2rem, 2.6vw, 2rem) 3.4rem; }
-.timeline__rail { left: 1.6rem !important; }
-.contact::before { background: radial-gradient(closest-side, rgba(244, 249, 254, 0.86), rgba(244, 249, 254, 0.55) 60%, rgba(244, 249, 254, 0) 100%); }
-.h2, .contact__title, .hero__title { text-shadow: none; }
-@media (max-width: 860px) {
-  .statement, .work, .services, .stack, .process { background: none; }
+.side-left > .panel, .side-left > .hero__inner { justify-self: start; }
+.side-right > .panel { justify-self: end; }
+
+.panel, .hero__inner {
+  position: relative; width: var(--col);
+  padding: var(--panel-pad);
+  background: var(--panel-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--r-panel);
+  box-shadow: var(--panel-shadow);
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .hero__inner, .hero__facts, .statement__text, .statement__pillars, .work .index, .services__head, .acc, .stack__groups, .timeline { background: rgba(250, 253, 255, 0.9); }
+  .panel, .hero__inner { background: rgba(248, 252, 255, 0.94); }
 }
 
-.hero__kicker { display: inline-block; padding: 0.4rem 0.85rem; border-radius: 999px; color: #0f5fb0;
-  background: rgba(250, 253, 255, 0.72); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.75); }
-@media (max-width: 860px) {
-  .hero__inner { width: auto; max-width: 100%; padding: 1.2rem 1.15rem 1.35rem; }
-  .hero__title { font-size: clamp(2.7rem, 13.2vw, 3.6rem); }
-  .hero__kicker { font-size: 0.7rem; letter-spacing: 0.1em; }
+/* Section headings: one size inside panels */
+.panel .h2 { font-size: clamp(2.1rem, 3.6vw, 3.4rem); letter-spacing: -0.045em; line-height: 1; }
+.sect-head { gap: 0.75rem; margin-bottom: clamp(1.6rem, 3vw, 2.4rem); }
+.sect-head__note { color: var(--ink-2); font-size: 1.02rem; max-width: 40ch; }
+.h2, .contact__title, .hero__title { text-shadow: none; }
+
+/* ---------- Hero ---------- */
+.hero { padding-top: 7rem; padding-bottom: 3rem; grid-template-rows: none; }
+.hero__inner { width: min(100%, 41rem); max-width: none; align-self: center; }
+.hero__kicker {
+  display: inline-flex; align-items: center; gap: 0.55rem; margin: 0 0 1.4rem;
+  padding: 0.38rem 0.85rem; border-radius: 999px; font-size: 0.74rem; letter-spacing: 0.12em;
+  color: #0f5fb0; background: rgba(47, 143, 232, 0.1); border: 1px solid rgba(47, 143, 232, 0.22);
 }
-.sect-head__note { color: var(--ink-2); }
+.hero__kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #22b573; box-shadow: 0 0 0 4px rgba(34, 181, 115, 0.18); }
+.hero__title { font-size: clamp(3.4rem, 7vw, 6.6rem); line-height: 0.92; letter-spacing: -0.055em; }
+.hero__lede { margin-top: 1.4rem; font-size: clamp(1.05rem, 1.3vw, 1.2rem); max-width: 34ch; text-shadow: none; }
+.hero__ctas { margin-top: 1.9rem; }
+.hero__facts {
+  margin: 2.2rem 0 0; padding: 1.4rem 0 0; border-top: 1px solid var(--line);
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem;
+}
+.hero__facts dd { font-size: 0.92rem; line-height: 1.4; }
+
+/* ---------- Statement ---------- */
+.statement { padding-top: clamp(5rem, 12vh, 8rem); }
+.panel--statement { width: min(100%, 44rem); }
+.statement__text { margin: 0; max-width: none; font-size: clamp(1.3rem, 1.85vw, 1.7rem); line-height: 1.38; letter-spacing: -0.02em; text-shadow: none; }
+.statement__pillars {
+  margin: 2.2rem 0 0; max-width: none; padding-top: 1.8rem; border-top: 1px solid var(--line);
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem;
+}
+.statement__pillars article { border-top: 0; padding-top: 0; }
+.statement__pillars iconify-icon {
+  display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 12px;
+  background: var(--ember-soft); font-size: 1.25rem;
+}
+.statement__pillars h3 { margin: 0.9rem 0 0.35rem; font-size: 1.08rem; }
+.statement__pillars p { font-size: 0.92rem; line-height: 1.5; color: var(--ink-2); }
+
+/* ---------- Work ---------- */
+.panel--work { width: min(100%, 46rem); }
+.index { max-width: none; border-bottom: 0; }
+.row:first-child { border-top: 1px solid var(--line-2); }
+.row::before { inset: 0 calc(var(--panel-pad) * -1); }
+.row__main { padding: 1.2rem 0; gap: 1.2rem; }
+.row__title { font-size: clamp(1.7rem, 2.8vw, 2.5rem); letter-spacing: -0.04em; text-shadow: none; }
+.row__type { font-size: 0.72rem; }
+.row__state { font-size: 0.72rem; min-width: 6.5rem; }
+.row__state--live::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 0.45rem; vertical-align: 0.15em; }
+.row__detail { max-width: none; padding-bottom: 1.4rem; }
+.row__detail p { font-size: 0.98rem; }
+@media (hover: hover) and (pointer: fine) {
+  .js .row:hover .row__detail, .js .row:focus-within .row__detail { padding-bottom: 1.4rem; }
+  .js .row:hover .row__title, .js .row:focus-within .row__title { transform: translateX(0.5rem); }
+}
+
+/* ---------- Repositories (the one full-width chapter) ---------- */
+.repos { align-content: center; }
+.panel--repos { width: 100%; }
+.repos__head { margin-bottom: 1.6rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line); }
+.repo { background: rgba(255, 255, 255, 0.72); border-color: rgba(11, 27, 48, 0.08); border-radius: 16px; }
+.repos__all { margin-top: 1.6rem; }
+
+/* ---------- Services ---------- */
+.panel--services { display: block; }
+.services__head { position: static; padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.acc { border-bottom: 0; }
+.acc__item:first-child { border-top: 1px solid var(--line-2); }
+.acc__item summary { padding: 1.15rem 0; font-size: clamp(1.15rem, 1.6vw, 1.4rem); }
+.acc__body { padding: 0 0 1.4rem; }
+
+/* ---------- Stack ---------- */
+.stack .h2 { margin-bottom: 0; }
+.stack__groups { max-width: none; gap: 1.6rem 2rem; }
+.stack__group { border-top: 1px solid var(--line); padding-top: 1rem; }
+.stack__group li { background: rgba(255, 255, 255, 0.8); padding: 0.45rem 0.85rem; font-size: 0.9rem; }
+
+/* ---------- Process ---------- */
+.process { display: grid; grid-template-columns: none; }
+.process .h2, .timeline { grid-column: auto; }
+.timeline { padding-left: 2.2rem; gap: 1.8rem; }
+.step h3 { font-size: clamp(1.3rem, 2vw, 1.7rem); }
+.step p { font-size: 0.96rem; color: var(--ink-2); }
+.step::before { background: #fff; }
+
+/* ---------- Contact ---------- */
+.contact { align-content: center; justify-items: center; text-align: center; padding-bottom: clamp(5rem, 12vh, 8rem); }
+.panel--contact { width: min(100%, 52rem); display: grid; justify-items: center; gap: 1.2rem; padding: clamp(2rem, 5vw, 4rem); }
+.contact__title { font-size: clamp(2.6rem, 5.4vw, 4.8rem); max-width: 14em; }
+.contact__lede { text-shadow: none; }
+.contact__mail { margin-top: 0.6rem; font-size: clamp(1.1rem, 2.2vw, 1.7rem); padding: 0.85rem 1.6rem; }
+
+/* ---------- Tablet & phone ---------- */
+@media (max-width: 1024px) {
+  :root { --col: min(100%, 36rem); }
+  .panel--statement, .panel--work { width: min(100%, 40rem); }
+}
+@media (max-width: 820px) {
+  section { min-height: 0; padding-top: 4.5rem; padding-bottom: 4.5rem; }
+  .side-right > .panel, .side-left > .panel { justify-self: stretch; }
+  .panel, .hero__inner, .panel--statement, .panel--work { width: 100%; }
+  .statement, .work, .services, .stack, .process { background: none; }
+  .hero { min-height: 100dvh; padding-top: 46vh; align-content: end; }
+  .hero__inner { padding: 1.3rem 1.2rem 1.4rem; }
+  .hero__title { font-size: clamp(2.7rem, 13.2vw, 3.8rem); }
+  .hero__kicker { font-size: 0.68rem; letter-spacing: 0.08em; }
+  .hero__facts { grid-template-columns: 1fr 1fr; }
+  .hero__facts div:last-child { grid-column: auto; }
+  .hero__facts div:nth-child(3) { grid-column: 1 / -1; }
+  .statement__pillars { grid-template-columns: 1fr; gap: 1.2rem; }
+  .stack__groups { grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .contact { min-height: 100dvh; }
+}
+@media (max-width: 480px) {
+  .stack__groups { grid-template-columns: 1fr; }
+}
+
+/* Nav and footer share the content edges */
+.nav, .footer { padding-inline: max(var(--pad), calc((100vw - var(--max)) / 2 + var(--pad))); }
+.footer { max-width: none; }
+@media (min-width: 1600px) {
+  :root { --max: 1560px; --col: min(100%, 44rem); }
+  .hero__inner { width: min(100%, 46rem); }
+  .panel--statement { width: min(100%, 50rem); }
+  .panel--work { width: min(100%, 52rem); }
+  html { font-size: 17px; }
+}
