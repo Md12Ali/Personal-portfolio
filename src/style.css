@@ -598,3 +598,52 @@ section {
   .panel--work { width: min(100%, 52rem); }
   html { font-size: 17px; }
 }
+
+/* ==========================================================================
+   Hiring layer: role line, building-next note, recruiter facts, case studies
+   ========================================================================== */
+.hero__role { margin: 1rem 0 0; font-family: var(--mono); font-size: 0.86rem; letter-spacing: 0.06em; text-transform: uppercase; color: #0f5fb0; }
+.hero__lede { margin-top: 0.9rem; }
+.row__links .link-btn { min-height: 2.4rem; padding: 0 1rem; font-size: 0.88rem; }
+button.link-btn { background: rgba(255, 255, 255, 0.7); }
+.index__next { margin: 1.4rem 0 0; padding-top: 1.2rem; border-top: 1px solid var(--line); font-size: 0.9rem; line-height: 1.55; color: var(--ink-2); }
+.index__next span { display: block; margin-bottom: 0.3rem; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+.panel--contact .hero__kicker { margin: 0; }
+.contact__facts {
+  margin: 0.4rem 0 0.4rem; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem;
+  padding: 1.1rem 0; border-block: 1px solid var(--line); text-align: left;
+}
+.contact__facts div { display: grid; gap: 0.2rem; }
+.contact__facts dt { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.contact__facts dd { margin: 0; font-size: 0.95rem; color: var(--ink); font-weight: 500; }
+
+
+/* Case study dialog */
+.case {
+  width: min(46rem, calc(100vw - 2rem)); max-height: min(88dvh, 52rem); padding: 0; border: 1px solid var(--panel-line);
+  border-radius: var(--r-panel); background: rgba(248, 252, 255, 0.94); color: var(--ink);
+  box-shadow: 0 40px 100px -20px rgba(11, 27, 48, 0.45); overflow: auto; overscroll-behavior: contain;
+}
+.case::backdrop { background: rgba(11, 27, 48, 0.42); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.case[open] { animation: case-in 0.45s var(--ease); }
+@keyframes case-in { from { opacity: 0; transform: translateY(18px) scale(0.98); } }
+.case__inner { padding: clamp(1.4rem, 4vw, 2.6rem); }
+.case__head { position: relative; padding-right: 3rem; margin-bottom: 1.6rem; }
+.case__kicker { margin: 0 0 0.5rem; font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: #0f5fb0; }
+.case__title { margin: 0; font-size: clamp(2rem, 4.4vw, 3rem); font-weight: 600; letter-spacing: -0.045em; line-height: 1; }
+.case__close { position: absolute; top: -0.3rem; right: -0.3rem; width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; font-size: 1.6rem; color: var(--muted); cursor: pointer; }
+.case__close:hover { color: var(--ink); background: var(--ember-soft); }
+.case__body { display: grid; gap: 1.4rem; }
+.case__sec { padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.case__body h3 { margin: 0 0 0.6rem; font-family: var(--mono); font-size: 0.74rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.case__body p { margin: 0; font-size: 1.05rem; line-height: 1.55; color: var(--ink-2); }
+.case__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.55rem; }
+.case__list li { position: relative; padding-left: 1.3rem; color: var(--ink-2); line-height: 1.5; }
+.case__list li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--ember); }
+.case__foot { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.8rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+
+@media (max-width: 820px) {
+  .contact__facts { grid-template-columns: 1fr; gap: 0.7rem; }
+  .contact__actions { width: 100%; }
+}

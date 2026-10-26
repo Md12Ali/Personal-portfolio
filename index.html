@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mohammed Ali | Full-Stack Developer, 3D Web &amp; Design</title>
-  <meta name="description" content="Mohammed Ali is a full-stack web developer who builds fast, interactive 3D websites with JavaScript, PHP, Python, Three.js and MySQL, and offers web design, graphic design, SEO and digital marketing." />
+  <title>Mohammed Ali | Full-Stack Web Developer, London</title>
+  <meta name="description" content="Mohammed Ali is a London-based full-stack web developer open to remote and hybrid roles. JavaScript, React, PHP, Python, MySQL and Three.js, with five live projects and their code." />
   <meta name="theme-color" content="#e9f3fc" />
   <meta name="color-scheme" content="light" />
   <meta property="og:title" content="Mohammed Ali | Full-Stack Developer" />
-  <meta property="og:description" content="Full-stack development, 3D web experiences, web and graphic design, SEO and digital marketing." />
+  <meta property="og:description" content="London-based full-stack developer, open to remote and hybrid roles. Five live projects with code and case studies." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mohammed-ali-portfolio.onrender.com/" />
   <meta property="og:image" content="https://mohammed-ali-portfolio.onrender.com/og.jpg" />
@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"https://mohammed-ali-portfolio.onrender.com/","email":"mailto:md077ali@gmail.com","sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","PHP","Python","HTML","CSS","Three.js","SQL","MySQL","Web Design","Graphic Design","SEO","Digital Marketing"]}
+  {"@context":"https://schema.org","@type":"Person","name":"Mohammed Ali","jobTitle":"Full-Stack Web Developer","url":"https://mohammed-ali-portfolio.onrender.com/","email":"mailto:md077ali@gmail.com","address":{"@type":"PostalAddress","addressLocality":"London","addressCountry":"GB"},"sameAs":["https://github.com/Md12Ali"],"knowsAbout":["JavaScript","React","PHP","Python","HTML","CSS","Tailwind CSS","Three.js","Node.js","SQL","MySQL","Web Design","SEO"]}
   </script>
 </head>
 <body>
@@ -48,19 +48,21 @@
     </a>
     <nav class="nav__links" aria-label="Primary">
       <a href="#work">Work</a>
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#stack">Stack</a>
+      <a href="/cv.html" target="_blank" rel="noopener">CV</a>
       <a href="#contact">Contact</a>
     </nav>
-    <a href="#contact" class="nav__cta">Start a project</a>
+    <a href="#contact" class="nav__cta">Hire me</a>
     <button class="nav__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </header>
 
   <div class="menu" id="menu" hidden>
     <nav aria-label="Mobile">
       <a href="#work">Work</a>
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#stack">Stack</a>
+      <a href="/cv.html" target="_blank" rel="noopener">CV</a>
       <a href="#contact">Contact</a>
     </nav>
     <p class="menu__mail"><a href="mailto:md077ali@gmail.com">md077ali@gmail.com</a></p>
@@ -70,70 +72,78 @@
     <!-- HERO -->
     <section class="hero side-left" id="top" data-scene="hero">
       <div class="hero__inner">
-        <p class="hero__kicker">Full-stack developer &amp; designer</p>
+        <p class="hero__kicker">Open to remote &amp; hybrid roles</p>
         <h1 class="hero__title" aria-label="Mohammed Ali">
           <span class="hero__line"><span class="hero__word">Mohammed</span></span>
           <span class="hero__line"><span class="hero__word">Ali</span></span>
         </h1>
-        <p class="hero__lede">I build fast, 3D web experiences from the database to the last pixel, then help people find them.</p>
+        <p class="hero__role">Full-stack web developer</p>
+        <p class="hero__lede">I build fast web apps and 3D experiences, from the database to the last pixel. Five of them are live right now.</p>
         <div class="hero__ctas">
           <a href="#work" class="btn btn--solid" data-magnetic>View work <iconify-icon icon="solar:arrow-right-down-linear" aria-hidden="true"></iconify-icon></a>
-          <a href="#contact" class="btn btn--line">Start a project</a>
+          <a href="/cv.html" class="btn btn--line" target="_blank" rel="noopener"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> View CV</a>
         </div>
         <dl class="hero__facts">
-          <div><dt>Core stack</dt><dd>JavaScript, PHP, Python</dd></div>
-          <div><dt>Focus</dt><dd>3D web, full-stack, SEO</dd></div>
-          <div><dt>Status</dt><dd>Open to new projects</dd></div>
+          <div><dt>Based in</dt><dd>London, UK</dd></div>
+          <div><dt>Looking for</dt><dd>Remote or hybrid</dd></div>
+          <div><dt>Core stack</dt><dd>JavaScript, React, PHP, Python</dd></div>
         </dl>
       </div>
     </section>
 
-    <!-- STATEMENT -->
-    <section class="statement side-right" id="about" data-scene="statement">
-      <div class="panel panel--statement">
-        <h2 class="sr-only">About</h2>
-        <p class="statement__text" data-fill>I treat a website as one system. The MySQL schema, the PHP and Python on the server, the JavaScript and Three.js in the browser, the design that makes people stay and the SEO that brings them in. I own every layer, so nothing gets lost between them.</p>
-        <div class="statement__pillars">
-          <article>
-            <iconify-icon icon="solar:code-square-linear" aria-hidden="true"></iconify-icon>
-            <h3>Build</h3>
-            <p>Full-stack web apps, APIs and databases that stay fast as they grow.</p>
-          </article>
-          <article>
-            <iconify-icon icon="solar:pen-new-round-linear" aria-hidden="true"></iconify-icon>
-            <h3>Design</h3>
-            <p>Interfaces, brand identities and graphics with a clear point of view.</p>
-          </article>
-          <article>
-            <iconify-icon icon="solar:graph-up-linear" aria-hidden="true"></iconify-icon>
-            <h3>Grow</h3>
-            <p>Technical SEO and digital marketing that turn visits into results.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- WORK -->
-    <section class="work side-left" id="work" data-scene="work">
+    <section class="work side-right" id="work" data-scene="statement">
       <div class="panel panel--work">
         <header class="sect-head">
           <h2 class="h2" data-split>Selected work</h2>
-          <p class="sect-head__note">Live products and what I'm building next.</p>
+          <p class="sect-head__note">Five live products, each with its code and a short case study.</p>
         </header>
-
         <ol class="index">
           <li class="row" data-live>
             <div class="row__main">
               <h3 class="row__title">Qunor</h3>
-              <span class="row__type">Web app</span>
+              <span class="row__type">Web app (PWA)</span>
               <span class="row__state row__state--live">Live</span>
             </div>
             <div class="row__detail"><div class="row__inner">
               <p>A free app for learning to read the Quran: all 114 surahs, word-by-word audio from 44 reciters, qaida and tajweed lessons, and translations in 81 languages. Works offline with no account.</p>
-              <ul class="tags"><li>JavaScript</li><li>PWA</li><li>HTML</li><li>CSS</li></ul>
+              <ul class="tags"><li>JavaScript</li><li>PWA</li><li>Python</li><li>HTML</li><li>CSS</li></ul>
               <div class="row__links">
                 <a class="link-btn link-btn--solid" href="https://qunor.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
                 <a class="link-btn" href="https://github.com/Md12Ali/Qunor" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+                <button type="button" class="link-btn" data-case="qunor"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> Case study</button>
+              </div>
+            </div></div>
+          </li>
+          <li class="row" data-live>
+            <div class="row__main">
+              <h3 class="row__title">Driving Teaching</h3>
+              <span class="row__type">Web app</span>
+              <span class="row__state row__state--live">Live</span>
+            </div>
+            <div class="row__detail"><div class="row__inner">
+              <p>A teaching platform for UK driving instructors and their pupils: a 37-session teaching route, a 30-lesson A to Z curriculum, a digital mock test sheet and per-pupil progress tracking.</p>
+              <ul class="tags"><li>JavaScript</li><li>Tailwind CSS</li><li>HTML</li><li>LocalStorage</li></ul>
+              <div class="row__links">
+                <a class="link-btn link-btn--solid" href="https://driving-teaching.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+                <a class="link-btn" href="https://github.com/Md12Ali/Driving-teaching" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+                <button type="button" class="link-btn" data-case="driving"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> Case study</button>
+              </div>
+            </div></div>
+          </li>
+          <li class="row" data-live>
+            <div class="row__main">
+              <h3 class="row__title">Tax Return Helper</h3>
+              <span class="row__type">Web + Android</span>
+              <span class="row__state row__state--live">Live</span>
+            </div>
+            <div class="row__detail"><div class="row__inner">
+              <p>An HMRC Self Assessment helper for self-employed people: daily income, expense and mileage logging, tax and National Insurance estimates, and box-by-box figures for the GOV.UK return. In English and Bengali.</p>
+              <ul class="tags"><li>React</li><li>Vite</li><li>Tailwind CSS</li><li>Capacitor</li><li>pdf-lib</li></ul>
+              <div class="row__links">
+                <a class="link-btn link-btn--solid" href="https://yearly-tax-return.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+                <a class="link-btn" href="https://github.com/Md12Ali/Yearly-tax-return" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+                <button type="button" class="link-btn" data-case="tax"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> Case study</button>
               </div>
             </div></div>
           </li>
@@ -149,6 +159,7 @@
               <div class="row__links">
                 <a class="link-btn link-btn--solid" href="https://paraline.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
                 <a class="link-btn" href="https://github.com/Md12Ali/paraline" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+                <button type="button" class="link-btn" data-case="paraline"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> Case study</button>
               </div>
             </div></div>
           </li>
@@ -164,34 +175,37 @@
               <div class="row__links">
                 <a class="link-btn link-btn--solid" href="https://appointments-reminder.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
                 <a class="link-btn" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+                <button type="button" class="link-btn" data-case="appointments"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> Case study</button>
               </div>
             </div></div>
           </li>
-          <li class="row" data-repo-hint="islam,learning">
-            <div class="row__main">
-              <h3 class="row__title">A to Z Islamic Learning</h3>
-              <span class="row__type">3D platform</span>
-              <span class="row__state">In progress</span>
-            </div>
-            <div class="row__detail"><div class="row__inner">
-              <p>An all-in-one, multilingual and interactive 3D learning platform with a Quran reader, Hadith library, daily utilities and Q&amp;A in one place.</p>
-              <ul class="tags"><li>Three.js</li><li>JavaScript</li><li>PHP</li><li>MySQL</li></ul>
-              <div class="row__links"><a class="link-btn row__repo" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a></div>
-            </div></div>
-          </li>
-          <li class="row" data-repo-hint="pingo">
-            <div class="row__main">
-              <h3 class="row__title">Pingo</h3>
-              <span class="row__type">Mobile app</span>
-              <span class="row__state">In progress</span>
-            </div>
-            <div class="row__detail"><div class="row__inner">
-              <p>Real-time chat, media sharing and voice and video calling in one cross-platform mobile app with a live socket back end.</p>
-              <ul class="tags"><li>React Native</li><li>Node.js</li><li>Socket.io</li><li>Supabase</li><li>Agora</li></ul>
-              <div class="row__links"><a class="link-btn row__repo" hidden target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a></div>
-            </div></div>
-          </li>
         </ol>
+        <p class="index__next"><span>Building next</span> A to Z Islamic Learning, a multilingual 3D learning platform (Three.js, PHP, MySQL) · Pingo, a real-time chat and calling app (React Native, Node.js, Socket.io)</p>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="statement side-left" id="about" data-scene="work">
+      <div class="panel panel--statement">
+        <h2 class="sr-only">About</h2>
+        <p class="statement__text" data-fill>I build software for problems I know first-hand. I teach driving, so I built the platform I teach with. I'm self-employed, so I built the tax tool I use. I treat every project as one system, from the MySQL schema and the PHP or Python on the server to the JavaScript in the browser, and I ship it.</p>
+        <div class="statement__pillars">
+          <article>
+            <iconify-icon icon="solar:code-square-linear" aria-hidden="true"></iconify-icon>
+            <h3>Build</h3>
+            <p>Full-stack web apps, APIs and databases that stay fast as they grow.</p>
+          </article>
+          <article>
+            <iconify-icon icon="solar:pen-new-round-linear" aria-hidden="true"></iconify-icon>
+            <h3>Design</h3>
+            <p>Clean, responsive interfaces that work on every screen.</p>
+          </article>
+          <article>
+            <iconify-icon icon="solar:rocket-2-linear" aria-hidden="true"></iconify-icon>
+            <h3>Ship</h3>
+            <p>Deployed, documented and found: hosting, READMEs and SEO included.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -252,40 +266,14 @@
     <!-- STACK -->
     <section class="stack side-left" id="stack" data-scene="stack">
       <div class="panel panel--stack">
-        <header class="sect-head"><h2 class="h2" data-split>The stack</h2><p class="sect-head__note">The tools I reach for, from the browser to the database.</p></header>
+        <header class="sect-head"><h2 class="h2" data-split>The stack</h2><p class="sect-head__note">What I use day to day, and what each project above is built with.</p></header>
         <div class="stack__groups">
-          <div class="stack__group">
-            <h3>Browser</h3>
-            <ul>
-              <li><iconify-icon icon="logos:html-5" aria-hidden="true"></iconify-icon>HTML5</li>
-              <li><iconify-icon icon="logos:css-3" aria-hidden="true"></iconify-icon>CSS3</li>
-              <li><iconify-icon icon="logos:javascript" aria-hidden="true"></iconify-icon>JavaScript</li>
-              <li><iconify-icon icon="simple-icons:threedotjs" aria-hidden="true"></iconify-icon>Three.js</li>
-            </ul>
-          </div>
-          <div class="stack__group">
-            <h3>Server</h3>
-            <ul>
-              <li><iconify-icon icon="logos:php" aria-hidden="true"></iconify-icon>PHP</li>
-              <li><iconify-icon icon="logos:python" aria-hidden="true"></iconify-icon>Python</li>
-              <li><iconify-icon icon="logos:nodejs-icon" aria-hidden="true"></iconify-icon>Node.js</li>
-            </ul>
-          </div>
-          <div class="stack__group">
-            <h3>Data</h3>
-            <ul>
-              <li><iconify-icon icon="logos:mysql-icon" aria-hidden="true"></iconify-icon>MySQL</li>
-              <li><iconify-icon icon="solar:database-linear" aria-hidden="true"></iconify-icon>SQL</li>
-            </ul>
-          </div>
-          <div class="stack__group">
-            <h3>Reach</h3>
-            <ul>
-              <li><iconify-icon icon="solar:pallete-2-linear" aria-hidden="true"></iconify-icon>Web &amp; graphic design</li>
-              <li><iconify-icon icon="solar:magnifer-linear" aria-hidden="true"></iconify-icon>SEO</li>
-              <li><iconify-icon icon="solar:megaphone-linear" aria-hidden="true"></iconify-icon>Digital marketing</li>
-            </ul>
-          </div>
+          <div class="stack__group"><h3>Front end</h3><ul><li><iconify-icon icon="logos:html-5" aria-hidden="true"></iconify-icon>HTML5</li><li><iconify-icon icon="logos:css-3" aria-hidden="true"></iconify-icon>CSS3</li><li><iconify-icon icon="logos:javascript" aria-hidden="true"></iconify-icon>JavaScript</li><li><iconify-icon icon="logos:react" aria-hidden="true"></iconify-icon>React</li><li><iconify-icon icon="logos:tailwindcss-icon" aria-hidden="true"></iconify-icon>Tailwind CSS</li><li><iconify-icon icon="simple-icons:threedotjs" aria-hidden="true"></iconify-icon>Three.js</li></ul></div>
+          <div class="stack__group"><h3>Back end</h3><ul><li><iconify-icon icon="logos:php" aria-hidden="true"></iconify-icon>PHP</li><li><iconify-icon icon="logos:python" aria-hidden="true"></iconify-icon>Python</li><li><iconify-icon icon="logos:nodejs-icon" aria-hidden="true"></iconify-icon>Node.js</li><li><iconify-icon icon="solar:server-square-linear" aria-hidden="true"></iconify-icon>REST APIs</li></ul></div>
+          <div class="stack__group"><h3>Data</h3><ul><li><iconify-icon icon="logos:mysql-icon" aria-hidden="true"></iconify-icon>MySQL</li><li><iconify-icon icon="solar:database-linear" aria-hidden="true"></iconify-icon>SQL</li><li><iconify-icon icon="logos:supabase-icon" aria-hidden="true"></iconify-icon>Supabase</li></ul></div>
+          <div class="stack__group"><h3>Mobile</h3><ul><li><iconify-icon icon="logos:react" aria-hidden="true"></iconify-icon>React Native</li><li><iconify-icon icon="logos:kotlin-icon" aria-hidden="true"></iconify-icon>Kotlin</li><li><iconify-icon icon="logos:capacitorjs-icon" aria-hidden="true"></iconify-icon>Capacitor</li></ul></div>
+          <div class="stack__group"><h3>Tools</h3><ul><li><iconify-icon icon="logos:git-icon" aria-hidden="true"></iconify-icon>Git</li><li><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon>GitHub</li><li><iconify-icon icon="logos:vitejs" aria-hidden="true"></iconify-icon>Vite</li><li><iconify-icon icon="simple-icons:render" aria-hidden="true"></iconify-icon>Render</li></ul></div>
+          <div class="stack__group"><h3>Growth</h3><ul><li><iconify-icon icon="solar:pallete-2-linear" aria-hidden="true"></iconify-icon>Web &amp; graphic design</li><li><iconify-icon icon="solar:magnifer-linear" aria-hidden="true"></iconify-icon>SEO</li><li><iconify-icon icon="solar:megaphone-linear" aria-hidden="true"></iconify-icon>Digital marketing</li></ul></div>
         </div>
       </div>
     </section>
@@ -307,13 +295,21 @@
     <!-- CONTACT -->
     <section class="contact" id="contact" data-scene="contact">
       <div class="panel panel--contact">
-        <h2 class="contact__title" data-split>Have a project in mind?</h2>
-        <p class="contact__lede">Tell me about the website, app, brand or campaign. I'll reply with ideas, not just a quote.</p>
-        <a class="contact__mail" href="mailto:md077ali@gmail.com?subject=Project%20enquiry" data-magnetic>
+        <p class="hero__kicker">Available now</p>
+        <h2 class="contact__title" data-split>Let's work together</h2>
+        <p class="contact__lede">I'm looking for a remote or hybrid role as a full-stack or front-end developer, and I'm open to freelance projects.</p>
+        <dl class="contact__facts">
+          <div><dt>Role</dt><dd>Full-stack or front-end developer</dd></div>
+          <div><dt>Work</dt><dd>Remote or hybrid</dd></div>
+          <div><dt>Based in</dt><dd>London, UK</dd></div>
+        </dl>
+        <a class="contact__mail" href="mailto:md077ali@gmail.com?subject=Developer%20role" data-magnetic>
           <span>md077ali@gmail.com</span>
           <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon>
         </a>
         <div class="contact__actions">
+          <a class="link-btn link-btn--solid" href="/cv.html" target="_blank" rel="noopener"><iconify-icon icon="solar:document-text-linear" aria-hidden="true"></iconify-icon> View CV</a>
+          <a class="link-btn" href="/cv.pdf" download>Download CV (PDF)</a>
           <button type="button" class="link-btn copy-email" data-email="md077ali@gmail.com"><iconify-icon icon="solar:copy-linear" aria-hidden="true"></iconify-icon><span class="copy-email__label">Copy email</span></button>
           <a class="link-btn" href="https://github.com/Md12Ali" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> GitHub</a>
         </div>
@@ -321,6 +317,103 @@
       </div>
     </section>
   </main>
+
+  <!-- CASE STUDIES -->
+  <dialog class="case" data-lenis-prevent id="case-qunor" aria-labelledby="case-qunor-t">
+    <div class="case__inner">
+      <header class="case__head">
+        <p class="case__kicker">Case study · Web app (PWA)</p>
+        <h2 class="case__title" id="case-qunor-t">Qunor</h2>
+        <button type="button" class="case__close" aria-label="Close case study"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+      </header>
+      <div class="case__body">
+        <div class="case__sec"><h3>The problem</h3><p>I wanted a free way to learn to read the Quran that works anywhere: no account, no sign-up, and no internet needed once it has loaded.</p></div>
+        <div class="case__sec"><h3>What I built</h3><ul class="case__list"><li>All 114 surahs with word-by-word audio from 44 reciters</li><li>Qaida and tajweed lessons for complete beginners</li><li>Translations in 81 languages</li><li>Installable as an app, works offline</li></ul></div>
+        <div class="case__sec"><h3>Key decisions</h3><ul class="case__list"><li>Built as a Progressive Web App so it installs on any phone without an app store</li><li>A Python check verifies the Quran text on every deploy, so a broken edit never goes live</li><li>No back end or accounts, which keeps it free to run and private for users</li></ul></div>
+        <div class="case__sec"><h3>Built with</h3><ul class="tags"><li>JavaScript</li><li>PWA</li><li>Service worker</li><li>Python</li><li>HTML</li><li>CSS</li></ul></div>
+      </div>
+      <footer class="case__foot">
+        <a class="link-btn link-btn--solid" href="https://qunor.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+        <a class="link-btn" href="https://github.com/Md12Ali/Qunor" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+      </footer>
+    </div>
+  </dialog>
+  <dialog class="case" data-lenis-prevent id="case-driving" aria-labelledby="case-driving-t">
+    <div class="case__inner">
+      <header class="case__head">
+        <p class="case__kicker">Case study · Web app</p>
+        <h2 class="case__title" id="case-driving-t">Driving Teaching</h2>
+        <button type="button" class="case__close" aria-label="Close case study"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+      </header>
+      <div class="case__body">
+        <div class="case__sec"><h3>The problem</h3><p>I teach driving. Lesson plans, pupil progress and mock test results were spread across paper and notes, with no single view of how close a pupil is to test standard.</p></div>
+        <div class="case__sec"><h3>What I built</h3><ul class="case__list"><li>A 37-session teaching route in 8 stages, each with a client-centred lesson plan</li><li>A 30-lesson A to Z curriculum with skills rated from Introduced to Independent</li><li>A digital mock test sheet laid out like the examiner's report, with a live pass or fail result</li><li>The official Show me, Tell me questions as flashcards, plus animated manoeuvre guides</li><li>Separate progress profiles for each pupil, with backup export and import</li></ul></div>
+        <div class="case__sec"><h3>Key decisions</h3><ul class="case__list"><li>Plain JavaScript and Tailwind CSS with no build step, so it deploys instantly as a static site</li><li>All data stays on the device in localStorage, so there is no login and no pupil data on a server</li><li>Light, dark and system themes, responsive from phone to desktop</li></ul></div>
+        <div class="case__sec"><h3>Built with</h3><ul class="tags"><li>JavaScript</li><li>Tailwind CSS v4</li><li>HTML</li><li>LocalStorage</li><li>Render</li></ul></div>
+      </div>
+      <footer class="case__foot">
+        <a class="link-btn link-btn--solid" href="https://driving-teaching.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+        <a class="link-btn" href="https://github.com/Md12Ali/Driving-teaching" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+      </footer>
+    </div>
+  </dialog>
+  <dialog class="case" data-lenis-prevent id="case-tax" aria-labelledby="case-tax-t">
+    <div class="case__inner">
+      <header class="case__head">
+        <p class="case__kicker">Case study · Web + Android app</p>
+        <h2 class="case__title" id="case-tax-t">Tax Return Helper</h2>
+        <button type="button" class="case__close" aria-label="Close case study"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+      </header>
+      <div class="case__body">
+        <div class="case__sec"><h3>The problem</h3><p>Self-employed drivers need to track income, expenses and mileage all year, then turn it into the right boxes on their HMRC Self Assessment return.</p></div>
+        <div class="case__sec"><h3>What I built</h3><ul class="case__list"><li>Quick add for income, expenses and business miles on every screen, saved to the right tax year</li><li>Income Tax and National Insurance estimates, and how much to set aside each month</li><li>The mileage allowance compared with actual car costs</li><li>Box-by-box figures to copy into the GOV.UK return, plus PDF export</li><li>English and Bengali, as a website and an Android app</li></ul></div>
+        <div class="case__sec"><h3>Key decisions</h3><ul class="case__list"><li>React 19 with Vite and Tailwind CSS 4</li><li>The tax engine is covered by automated tests with Node's built-in test runner</li><li>Capacitor wraps the same code as an Android app, so one codebase serves web and mobile</li><li>No back end: data stays on the device, with backup and restore</li></ul></div>
+        <div class="case__sec"><h3>Built with</h3><ul class="tags"><li>React</li><li>Vite</li><li>Tailwind CSS</li><li>Capacitor</li><li>pdf-lib</li><li>Node test runner</li></ul></div>
+      </div>
+      <footer class="case__foot">
+        <a class="link-btn link-btn--solid" href="https://yearly-tax-return.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+        <a class="link-btn" href="https://github.com/Md12Ali/Yearly-tax-return" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+      </footer>
+    </div>
+  </dialog>
+  <dialog class="case" data-lenis-prevent id="case-paraline" aria-labelledby="case-paraline-t">
+    <div class="case__inner">
+      <header class="case__head">
+        <p class="case__kicker">Case study · Writing tool</p>
+        <h2 class="case__title" id="case-paraline-t">ParaLine</h2>
+        <button type="button" class="case__close" aria-label="Close case study"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+      </header>
+      <div class="case__body">
+        <div class="case__sec"><h3>The problem</h3><p>Most free paraphrasing tools limit how much you can rewrite and merge your lines into one block, which breaks lists, scripts and subtitles.</p></div>
+        <div class="case__sec"><h3>What I built</h3><ul class="case__list"><li>Rewrites English text in six styles</li><li>Keeps every line separate, so the structure of the text survives</li><li>An offline mode that needs no AI service</li><li>An optional Gemini AI mode for higher-quality rewrites</li></ul></div>
+        <div class="case__sec"><h3>Key decisions</h3><ul class="case__list"><li>The offline mode means the tool keeps working, and stays free, without any API key</li><li>Gemini is optional, not required, so the core tool has no running cost</li></ul></div>
+        <div class="case__sec"><h3>Built with</h3><ul class="tags"><li>JavaScript</li><li>Gemini API</li><li>HTML</li><li>CSS</li></ul></div>
+      </div>
+      <footer class="case__foot">
+        <a class="link-btn link-btn--solid" href="https://paraline.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+        <a class="link-btn" href="https://github.com/Md12Ali/paraline" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+      </footer>
+    </div>
+  </dialog>
+  <dialog class="case" data-lenis-prevent id="case-appointments" aria-labelledby="case-appointments-t">
+    <div class="case__inner">
+      <header class="case__head">
+        <p class="case__kicker">Case study · Web + Android app</p>
+        <h2 class="case__title" id="case-appointments-t">Appointments</h2>
+        <button type="button" class="case__close" aria-label="Close case study"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+      </header>
+      <div class="case__body">
+        <div class="case__sec"><h3>The problem</h3><p>I needed a simple, private way to keep track of appointments, with reminders exactly when I want them.</p></div>
+        <div class="case__sec"><h3>What I built</h3><ul class="case__list"><li>Appointments with text or voice notes</li><li>Reminders at any day and time you choose</li><li>A web version and a native Android app</li></ul></div>
+        <div class="case__sec"><h3>Key decisions</h3><ul class="case__list"><li>The Android app is native Kotlin with Jetpack Compose</li><li>Everything stays on the device, with no account and no server</li></ul></div>
+        <div class="case__sec"><h3>Built with</h3><ul class="tags"><li>JavaScript</li><li>Kotlin</li><li>Jetpack Compose</li><li>HTML</li><li>CSS</li></ul></div>
+      </div>
+      <footer class="case__foot">
+        <a class="link-btn link-btn--solid" href="https://appointments-reminder.onrender.com" target="_blank" rel="noopener">Visit site <iconify-icon icon="solar:arrow-right-up-linear" aria-hidden="true"></iconify-icon></a>
+        <a class="link-btn" href="https://github.com/Md12Ali/Appointments" target="_blank" rel="noopener"><iconify-icon icon="mdi:github" aria-hidden="true"></iconify-icon> Code</a>
+      </footer>
+    </div>
+  </dialog>
 
   <footer class="footer">
     <p>&copy; <span id="year">2026</span> Mohammed Ali</p>

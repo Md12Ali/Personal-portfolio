@@ -204,7 +204,7 @@ if (!reduce) {
   reveal('.sect-head__note', { y: 16 });
   reveal('.acc', { y: 24, stagger: 0.05 });
   reveal('.stack__groups', { stagger: 0.1 });
-  reveal('.contact__lede, .contact__actions', { y: 20 });
+  reveal('.contact__lede, .contact__facts, .contact__actions', { y: 20 });
 
   gsap.from('.contact__mail', {
     y: 60, opacity: 0, duration: 1.2, ease: 'expo.out',
@@ -271,3 +271,13 @@ initProjects({
 /* fonts and late layout shifts change trigger positions */
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
 window.addEventListener('load', () => ScrollTrigger.refresh());
+
+/* ---------------- Case studies (native dialogs) ---------------- */
+document.querySelectorAll('[data-case]').forEach((btn) => {
+  const dlg = document.getElementById(`case-${btn.dataset.case}`);
+  if (!dlg || typeof dlg.showModal !== 'function') return;
+  btn.addEventListener('click', () => { dlg.showModal(); lenis && lenis.stop(); });
+  dlg.querySelector('.case__close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', () => { lenis && lenis.start(); btn.focus(); });
+});

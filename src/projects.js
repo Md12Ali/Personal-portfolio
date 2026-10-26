@@ -12,6 +12,9 @@ const LIVE = {
   qunor: 'https://qunor.onrender.com',
   paraline: 'https://paraline.onrender.com',
   appointments: 'https://appointments-reminder.onrender.com',
+  'driving-teaching': 'https://driving-teaching.onrender.com',
+  'yearly-tax-return': 'https://yearly-tax-return.onrender.com',
+  'adi-part-3': 'https://adi-part-3.onrender.com',
 };
 
 const LANG_COLORS = {

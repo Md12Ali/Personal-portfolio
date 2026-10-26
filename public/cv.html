@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mohammed Ali | CV</title>
+  <meta name="description" content="CV of Mohammed Ali, full-stack web developer in London, open to remote and hybrid roles." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#0b1b30; --ink-2:#24384f; --muted:#5a6d84; --line:#d9e4ef; --accent:#1f7bd2; --bg:#e9f3fc; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; padding: .8rem 1rem; background: rgba(233,243,252,.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .bar a, .bar button { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1.1rem; border-radius: 999px; border: 1px solid #b9cbe0; background: #fff; font: 500 .9rem 'Geist', sans-serif; text-decoration: none; cursor: pointer; color: var(--ink); }
+    .bar .solid { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .page { width: min(210mm, calc(100% - 2rem)); margin: 1.5rem auto 3rem; background: #fff; padding: 16mm 15mm; border-radius: 14px; box-shadow: 0 20px 60px -20px rgba(18,58,104,.3); }
+    header { display: grid; grid-template-columns: 1fr auto; gap: 1rem 2rem; align-items: end; padding-bottom: 1.1rem; border-bottom: 2px solid var(--ink); }
+    h1 { margin: 0; font-size: 2.3rem; line-height: 1; letter-spacing: -.04em; font-weight: 600; }
+    .role { margin: .45rem 0 0; font-family: 'Geist Mono', monospace; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .contact { margin: 0; padding: 0; list-style: none; text-align: right; font-size: .86rem; color: var(--ink-2); line-height: 1.6; }
+    .contact a { text-decoration: none; }
+    h2 { margin: 1.4rem 0 .6rem; font-family: 'Geist Mono', monospace; font-size: .74rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    p { margin: 0; }
+    .summary { font-size: .98rem; color: var(--ink-2); }
+    .skills { display: grid; grid-template-columns: 7.5rem 1fr; gap: .3rem 1rem; font-size: .9rem; }
+    .skills dt { font-weight: 600; }
+    .skills dd { margin: 0; color: var(--ink-2); }
+    .proj { padding: .75rem 0; border-top: 1px solid var(--line); break-inside: avoid; }
+    .proj:first-of-type { border-top: 0; padding-top: 0; }
+    .proj__head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .2rem 1rem; align-items: baseline; }
+    .proj h3 { margin: 0; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+    .proj h3 span { font-weight: 400; color: var(--muted); font-size: .88rem; }
+    .proj__links { font-family: 'Geist Mono', monospace; font-size: .74rem; color: var(--accent); }
+    .proj__links a { text-decoration: none; }
+    .proj p { margin-top: .25rem; font-size: .9rem; color: var(--ink-2); }
+    .proj ul { margin: .3rem 0 0; padding-left: 1.1rem; font-size: .88rem; color: var(--ink-2); }
+    .stack { margin-top: .3rem; font-family: 'Geist Mono', monospace; font-size: .74rem; color: var(--muted); }
+    .cols > .proj:first-of-type { border-top: 1px solid var(--line); padding-top: .75rem; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
+    .small { font-size: .9rem; color: var(--ink-2); }
+    @media (max-width: 640px) {
+      .page { padding: 1.4rem 1.2rem; }
+      header { grid-template-columns: 1fr; }
+      .contact { text-align: left; }
+      .skills { grid-template-columns: 1fr; }
+      .skills dd { margin-bottom: .4rem; }
+      .cols { grid-template-columns: 1fr; }
+    }
+    @page { size: A4; margin: 0; }
+    @media print {
+      html { font-size: 13px; }
+      body { background: #fff; font-size: 12.4px; line-height: 1.45; }
+      h1 { font-size: 2rem; }
+      h2 { margin: .95rem 0 .4rem; }
+      .proj, .cols > .proj:first-of-type { padding: .5rem 0; }
+      .proj ul { margin-top: .15rem; }
+      .bar { display: none; }
+      .page { width: auto; margin: 0; border-radius: 0; box-shadow: none; padding: 11mm 13mm; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="bar" aria-label="CV actions">
+    <a href="/">&larr; Portfolio</a>
+    <a class="solid" href="/cv.pdf" download>Download PDF</a>
+    <button type="button" onclick="window.print()">Print</button>
+  </nav>
+
+  <main class="page">
+    <header>
+      <div>
+        <h1>Mohammed Ali</h1>
+        <p class="role">Full-stack web developer</p>
+      </div>
+      <ul class="contact">
+        <li>London, UK · Open to remote &amp; hybrid</li>
+        <li><a href="mailto:md077ali@gmail.com">md077ali@gmail.com</a></li>
+        <li><a href="https://mohammed-ali-portfolio.onrender.com">mohammed-ali-portfolio.onrender.com</a></li>
+        <li><a href="https://github.com/Md12Ali">github.com/Md12Ali</a></li>
+      </ul>
+    </header>
+
+    <h2>Profile</h2>
+    <p class="summary">Full-stack web developer who designs, builds and deploys complete products end to end, from the database to the interface. I have five live applications in production, including a React web and Android app with an automated test suite, an offline-first Progressive Web App with translations in 81 languages, and a teaching platform built for working driving instructors. I also bring web design, graphic design and SEO, so the things I build look good and get found. Looking for a remote or hybrid full-stack or front-end role.</p>
+
+    <h2>Skills</h2>
+    <dl class="skills">
+      <dt>Front end</dt><dd>JavaScript (ES6+), React, HTML5, CSS3, Tailwind CSS, Three.js, GSAP, responsive and accessible UI</dd>
+      <dt>Back end</dt><dd>PHP, Python, Node.js, REST APIs, Socket.io</dd>
+      <dt>Data</dt><dd>MySQL, SQL, Supabase, localStorage and offline-first storage</dd>
+      <dt>Mobile</dt><dd>React Native, Kotlin with Jetpack Compose, Capacitor</dd>
+      <dt>Tools</dt><dd>Git, GitHub, Vite, Render, automated testing with Node's test runner</dd>
+      <dt>Also</dt><dd>Web and graphic design, technical SEO, digital marketing</dd>
+    </dl>
+
+    <h2>Projects</h2>
+    <section class="proj">
+      <div class="proj__head"><h3>Tax Return Helper <span>· Web + Android app</span></h3><span class="proj__links"><a href="https://yearly-tax-return.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/Yearly-tax-return">Code</a></span></div>
+      <p>HMRC Self Assessment helper for self-employed people, in English and Bengali.</p>
+      <ul>
+        <li>Daily income, expense and mileage logging, with Income Tax and National Insurance estimates and box-by-box figures for the GOV.UK return</li>
+        <li>One React codebase shipped as a website and an Android app with Capacitor; PDF export with pdf-lib</li>
+        <li>Tax engine covered by automated tests</li>
+      </ul>
+      <p class="stack">React 19 · Vite · Tailwind CSS 4 · Capacitor · pdf-lib</p>
+    </section>
+    <section class="proj">
+      <div class="proj__head"><h3>Qunor <span>· Progressive Web App</span></h3><span class="proj__links"><a href="https://qunor.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/Qunor">Code</a></span></div>
+      <p>Free app for learning to read the Quran: 114 surahs, word-by-word audio from 44 reciters, qaida and tajweed lessons, translations in 81 languages.</p>
+      <ul>
+        <li>Installable and fully offline, with no account required</li>
+        <li>A Python script verifies the source text on every deploy</li>
+      </ul>
+      <p class="stack">JavaScript · PWA · Service worker · Python</p>
+    </section>
+    <section class="proj">
+      <div class="proj__head"><h3>Driving Teaching <span>· Web app</span></h3><span class="proj__links"><a href="https://driving-teaching.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/Driving-teaching">Code</a></span></div>
+      <p>Teaching platform for UK driving instructors and their pupils.</p>
+      <ul>
+        <li>37-session teaching route, 30-lesson curriculum with skill ratings, digital mock test sheet with live pass or fail, per-pupil progress and backup</li>
+        <li>No build step and no server: deploys instantly, and pupil data never leaves the device</li>
+      </ul>
+      <p class="stack">JavaScript · Tailwind CSS v4 · HTML · localStorage</p>
+    </section>
+    <div class="cols">
+      <section class="proj">
+        <div class="proj__head"><h3>ParaLine</h3><span class="proj__links"><a href="https://paraline.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/paraline">Code</a></span></div>
+        <p>Paraphrasing tool with six styles, line-by-line output, an offline mode and an optional Gemini AI mode.</p>
+        <p class="stack">JavaScript · Gemini API</p>
+      </section>
+      <section class="proj">
+        <div class="proj__head"><h3>Appointments</h3><span class="proj__links"><a href="https://appointments-reminder.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/Appointments">Code</a></span></div>
+        <p>Private appointment tracker with voice notes and custom reminders, on the web and as a native Android app.</p>
+        <p class="stack">JavaScript · Kotlin · Jetpack Compose</p>
+      </section>
+    </div>
+    <section class="proj">
+      <div class="proj__head"><h3>This portfolio <span>· 3D website</span></h3><span class="proj__links"><a href="https://mohammed-ali-portfolio.onrender.com">Live</a> · <a href="https://github.com/Md12Ali/Personal-portfolio">Code</a></span></div>
+      <p>A scroll-driven 3D alpine valley built in code with Three.js and custom GLSL shaders, with GitHub repositories loaded live from the API and a lighter scene on phones.</p>
+      <p class="stack">Three.js · GLSL · GSAP · Vite</p>
+    </section>
+
+    <h2>In progress</h2>
+    <p class="small"><strong>Pingo</strong>, a real-time chat and video calling mobile app (React Native, Node.js, Socket.io, Supabase, Agora) · <strong>A to Z Islamic Learning</strong>, a multilingual 3D learning platform (Three.js, PHP, MySQL)</p>
+  </main>
+</body>
+</html>

@@ -12,6 +12,7 @@ The personal portfolio of **Mohammed Ali**, a full-stack web developer who also 
 - **Scroll-driven camera.** Scrolling flies the camera up the valley. Each section has its own view, framed on the side opposite the text, and the camera eases smoothly between them. Moving the pointer adds gentle depth.
 - **Readable on every screen.** A light theme with navy text, sky-blue accents and frosted-glass panels behind every block of copy, so text stays crisp over the scenery; phones get a lighter scene (fewer trees, less detail, no glow pass) so scrolling stays smooth.
 - **Live GitHub projects.** Every public repository is pulled from the GitHub API in the visitor's browser, so new repos show up without a rebuild. Filter them by language; deployed repos get a **Live site** link.
+- **Built for hiring.** An "Open to remote & hybrid roles" status in the hero, a recruiter facts strip (role, work type, location) in the contact section, a one-page CV at `/cv.html` with a PDF at `/cv.pdf`, and a case study for every live project (problem, what was built, key decisions, stack) in an accessible dialog.
 - **Editorial work index.** Featured projects are large rows that open on hover or keyboard focus (always open on touch screens).
 - **Motion design.** Intro curtain, letter-by-letter name reveal, headings that rise word by word, a statement that fills with light as you read, a process timeline that draws itself, and a magnetic contact button.
 - **SEO.** Meta, Open Graph image and canonical tags, plus `Person` structured data (JSON-LD).
@@ -40,6 +41,8 @@ On desktop a soft bloom pass makes the sky glow, the water glint and the firefli
 |---|---|---|---|
 | **Qunor** | Free app for learning to read the Quran: 114 surahs, word-by-word audio, tajweed lessons, 81 translations | [qunor.onrender.com](https://qunor.onrender.com) | [GitHub](https://github.com/Md12Ali/Qunor) |
 | **ParaLine** | Free, unlimited paraphrasing tool with six styles, an offline mode and an optional Gemini AI mode | [paraline.onrender.com](https://paraline.onrender.com) | [GitHub](https://github.com/Md12Ali/paraline) |
+| **Driving Teaching** | Teaching platform for UK driving instructors: teaching route, A to Z curriculum, mock test sheet, pupil progress | [driving-teaching.onrender.com](https://driving-teaching.onrender.com) | [GitHub](https://github.com/Md12Ali/Driving-teaching) |
+| **Tax Return Helper** | HMRC Self Assessment helper (React, web + Android), in English and Bengali | [yearly-tax-return.onrender.com](https://yearly-tax-return.onrender.com) | [GitHub](https://github.com/Md12Ali/Yearly-tax-return) |
 | **Appointments** | Private appointment tracker with text or voice notes and custom-time reminders | [appointments-reminder.onrender.com](https://appointments-reminder.onrender.com) | [GitHub](https://github.com/Md12Ali/Appointments) |
 | **A–Z Islamic Learning Platform** | Multilingual, interactive 3D learning platform | In progress | |
 | **Pingo** | Real-time chat, media sharing and calling mobile app | In progress | |
@@ -101,7 +104,8 @@ npm run preview   # preview the production build
 
 | To change… | Edit |
 |---|---|
-| Name, intro text, services, contact details | `index.html` |
+| Name, intro text, services, contact details, case studies | `index.html` |
+| CV | `public/cv.html`; regenerate `public/cv.pdf` by printing the page to PDF (A4, one page) |
 | Featured project cards | the `featured` block in `index.html` |
 | Which repos get a **Live site** button | the `LIVE` map at the top of `src/projects.js` |
 | GitHub account the repo list comes from | `USER` in `src/projects.js` |
