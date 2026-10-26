@@ -14,8 +14,10 @@ const LIVE = {
   appointments: 'https://appointments-reminder.onrender.com',
   'driving-teaching': 'https://driving-teaching.onrender.com',
   'yearly-tax-return': 'https://yearly-tax-return.onrender.com',
-  'adi-part-3': 'https://adi-part-3.onrender.com',
 };
+
+// Repositories left out of the list
+const HIDDEN = ['personal-portfolio', 'adi-part-3'];
 
 const LANG_COLORS = {
   JavaScript: '#f1e05a', TypeScript: '#3178c6', PHP: '#7a86b8', Python: '#3572A5', HTML: '#e34c26',
@@ -84,7 +86,7 @@ export async function initProjects({ onRender } = {}) {
   }
 
   repos = repos
-    .filter((r) => r.name.toLowerCase() !== 'personal-portfolio')
+    .filter((r) => !HIDDEN.includes(r.name.toLowerCase()))
     .sort((a, b) => (a.fork - b.fork) || (!!LIVE[b.name.toLowerCase()] - !!LIVE[a.name.toLowerCase()]) || (new Date(b.pushed) - new Date(a.pushed)));
 
   // link featured cards to their real repos when found
